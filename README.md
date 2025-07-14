@@ -1,40 +1,80 @@
-# Welcome to Remix!
+# Badge Designer Frontend
 
-- 📖 [Remix docs](https://remix.run/docs)
+A standalone React/Remix application for designing custom badges, hosted on Vercel and embedded in Shopify product pages.
+
+## Architecture
+
+- **Frontend**: React/Remix app hosted on Vercel
+- **Backend**: Gadget.dev API for data persistence
+- **Integration**: Embedded in Shopify via iframe
 
 ## Development
 
-Run the dev server:
-
-```sh
+```bash
+npm install
 npm run dev
 ```
 
-## Deployment
+## Deployment to Vercel
 
-First, build your app for production:
+### Option 1: Vercel CLI (Recommended)
 
-```sh
-npm run build
+1. Install Vercel CLI:
+```bash
+npm install -g vercel
 ```
 
-Then run the app in production mode:
-
-```sh
-npm start
+2. Login to Vercel:
+```bash
+vercel login
 ```
 
-Now you'll need to pick a host to deploy it to.
+3. Deploy:
+```bash
+vercel --prod
+```
 
-### DIY
+### Option 2: GitHub Integration
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
+1. Push your code to GitHub
+2. Connect your GitHub repo to Vercel
+3. Vercel will auto-deploy on push
 
-Make sure to deploy the output of `npm run build`
+## Environment Variables
 
-- `build/server`
-- `build/client`
+Set these in your Vercel dashboard:
 
-## Styling
+- `NODE_ENV=production`
+- `GADGET_API_URL=https://allqualitybadges-development.gadget.app/api`
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+## Shopify Integration
+
+Update your Shopify extension to use the Vercel URL:
+
+```javascript
+// In badge-designer-modal.js
+const badgeDesignerUrl = `https://your-vercel-domain.vercel.app/?product=${productId}`;
+```
+
+## Features
+
+- ✅ Badge design interface
+- ✅ Real-time preview
+- ✅ Shopify cart integration
+- ✅ Iframe-friendly headers
+- ✅ API integration with Gadget backend
+
+## API Integration
+
+The app communicates with your Gadget backend via:
+
+- `POST /api/badge-designs` - Save designs
+- `GET /api/badge-designs/:id` - Load designs
+- `GET /api/products/:id` - Get product info
+
+## Next Steps
+
+1. Deploy to Vercel
+2. Update Shopify extension URL
+3. Test embedding in Shopify
+4. Add more advanced features as needed
