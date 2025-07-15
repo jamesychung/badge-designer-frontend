@@ -10,6 +10,7 @@
       }
     },
     "routeIdToServerBundleId": {
+      "routes/deployment-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/working-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/iframe-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/static-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -24,6 +25,15 @@
         "id": "root",
         "file": "app/root.tsx",
         "config": {}
+      },
+      "routes/deployment-test": {
+        "file": "app/routes/deployment-test.tsx",
+        "id": "routes/deployment-test",
+        "path": "deployment-test",
+        "parentId": "root",
+        "config": {
+          "runtime": "nodejs"
+        }
       },
       "routes/working-test": {
         "file": "app/routes/working-test.tsx",
@@ -110,6 +120,12 @@
         "path": "",
         "id": "root",
         "file": "root.tsx"
+      },
+      "routes/deployment-test": {
+        "file": "routes/deployment-test.tsx",
+        "id": "routes/deployment-test",
+        "path": "deployment-test",
+        "parentId": "root"
       },
       "routes/working-test": {
         "file": "routes/working-test.tsx",

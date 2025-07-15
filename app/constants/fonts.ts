@@ -29,11 +29,45 @@ export const FONT_FAMILIES = [
     value: 'Verdana',
     label: 'Verdana',
     category: 'Sans-serif'
+  },
+  {
+    value: 'Tahoma',
+    label: 'Tahoma',
+    category: 'Sans-serif'
+  },
+  {
+    value: 'Trebuchet MS',
+    label: 'Trebuchet MS',
+    category: 'Sans-serif'
+  },
+  {
+    value: 'Impact',
+    label: 'Impact',
+    category: 'Sans-serif'
+  },
+  {
+    value: 'Comic Sans MS',
+    label: 'Comic Sans MS',
+    category: 'Casual'
   }
 ] as const;
 
-export const DEFAULT_FONT = 'Arial';
+export const FONT_CATEGORIES = [
+  'Sans-serif',
+  'Serif',
+  'Monospace',
+  'Casual'
+] as const;
 
-export const FONT_SIZES = [
-  8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 24, 28, 32, 36, 48, 60, 72
-] as const; 
+export type FontFamily = typeof FONT_FAMILIES[number]['value'];
+export type FontCategory = typeof FONT_CATEGORIES[number];
+
+// Define a type for font options that includes the optional isDefault property
+type FontOption = {
+  value: FontFamily;
+  label: string;
+  category: FontCategory;
+  isDefault?: boolean;
+};
+
+export const DEFAULT_FONT = (FONT_FAMILIES as readonly FontOption[]).find(font => font.isDefault)?.value || 'Arial'; 
