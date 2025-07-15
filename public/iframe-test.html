@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static Iframe Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .success {
+            color: green;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .time {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success">✅ Static HTML iframe test!</div>
+    <div class="info">
+        <p>If you can see this page in an iframe, then static files work with iframe embedding.</p>
+        <p>This bypasses Remix entirely and should work if Vercel's static file headers are configured correctly.</p>
+        <div class="time">Loaded at: <span id="time"></span></div>
+    </div>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toISOString();
+    </script>
+</body>
+</html> 
