@@ -24,6 +24,10 @@ export default function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext
 ) {
+  // Force iframe-friendly headers
+  responseHeaders.set("X-Frame-Options", "ALLOWALL");
+  responseHeaders.set("Content-Security-Policy", "frame-ancestors *");
+  
   return isbot(request.headers.get("user-agent") || "")
     ? handleBotRequest(
         request,

@@ -1,10 +1,12 @@
 // API configuration
-const GADGET_API_URL = process.env.NODE_ENV === 'production' 
+const GADGET_API_URL = process.env.GADGET_API_URL || (process.env.NODE_ENV === 'production' 
   ? 'https://allqualitybadges-development.gadget.app'
-  : 'http://127.0.0.1:9293';
+  : 'http://127.0.0.1:9293');
 
-// Use public endpoints to avoid authentication issues
-const PUBLIC_API_URL = `${GADGET_API_URL}/public/api`;
+const GADGET_API_KEY = process.env.GADGET_API_KEY;
+
+// Use authenticated API if key is available, otherwise fall back to public endpoints
+const API_BASE_URL = GADGET_API_KEY ? `${GADGET_API_URL}/api` : `${GADGET_API_URL}/public/api`;
 
 export interface BadgeDesignData {
   id?: string;
@@ -26,14 +28,21 @@ export interface ShopifyProduct {
 
 // API functions
 export const api = {
-  // Save badge design (using public endpoint)
+  // Save badge design (using authenticated or public endpoint)
   async saveBadgeDesign(designData: any): Promise<BadgeDesignData> {
     try {
-      const response = await fetch(`${PUBLIC_API_URL}/badge-designs`, {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add authentication if API key is available
+      if (GADGET_API_KEY) {
+        headers['Authorization'] = `Bearer ${GADGET_API_KEY}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/badge-designs`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ designData }),
       });
       
@@ -57,7 +66,16 @@ export const api = {
   // Get badge design by ID (with local storage fallback)
   async getBadgeDesign(id: string): Promise<BadgeDesignData> {
     try {
-      const response = await fetch(`${PUBLIC_API_URL}/badge-designs/${id}`);
+      const headers: Record<string, string> = {};
+      
+      // Add authentication if API key is available
+      if (GADGET_API_KEY) {
+        headers['Authorization'] = `Bearer ${GADGET_API_KEY}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/badge-designs/${id}`, {
+        headers,
+      });
       
       if (!response.ok) {
         // Fallback to local storage
@@ -82,7 +100,16 @@ export const api = {
   // Get product info from Shopify (mock data for now)
   async getProductInfo(productId: string): Promise<ShopifyProduct> {
     try {
-      const response = await fetch(`${PUBLIC_API_URL}/products/${productId}`);
+      const headers: Record<string, string> = {};
+      
+      // Add authentication if API key is available
+      if (GADGET_API_KEY) {
+        headers['Authorization'] = `Bearer ${GADGET_API_KEY}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+        headers,
+      });
       
       if (!response.ok) {
         // Return mock data as fallback

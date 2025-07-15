@@ -21,8 +21,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const headers = new Headers();
   headers.set("X-Frame-Options", "ALLOWALL");
   headers.set("Content-Security-Policy", "frame-ancestors *");
+  headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
   
-  return json({ productId }, { headers });
+  return json({ productId, timestamp: Date.now() }, { headers });
 };
 
 export default function Index() {
