@@ -1,20 +1,12 @@
 {
+  "functions": {
+    "app/routes/*.tsx": {
+      "maxDuration": 30
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "ALLOWALL"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors *"
-        }
-      ]
-    },
-    {
-      "source": "/iframe-test.html",
       "headers": [
         {
           "key": "X-Frame-Options",
