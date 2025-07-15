@@ -78,3 +78,5 @@ The app communicates with your Gadget backend via:
 2. Update Shopify extension URL
 3. Test embedding in Shopify
 4. Add more advanced features as needed
+
+# Force deployment
