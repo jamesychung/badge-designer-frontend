@@ -35,26 +35,23 @@ export const api = {
         'Content-Type': 'application/json',
       };
       
-      // Add authentication if API key is available
-      if (GADGET_API_KEY) {
-        headers['Authorization'] = `Bearer ${GADGET_API_KEY}`;
-      }
-      
-      const response = await fetch(`${API_BASE_URL}/badge-designs`, {
+      // Try to save to our API endpoint first
+      const response = await fetch('/api/badge-designs', {
         method: 'POST',
         headers,
         body: JSON.stringify({ designData }),
       });
       
-      if (!response.ok) {
-        console.warn('Failed to save to backend, using local storage fallback');
-        // Fallback to local storage if backend is not available
-        const designId = Date.now().toString();
-        localStorage.setItem(`badge-design-${designId}`, JSON.stringify(designData));
-        return { id: designId, designData };
+      if (response.ok) {
+        const result = await response.json();
+        return { id: result.designId, designData };
       }
       
-      return response.json();
+      // Fallback to local storage if API is not available
+      console.warn('Failed to save to backend, using local storage fallback');
+      const designId = Date.now().toString();
+      localStorage.setItem(`badge-design-${designId}`, JSON.stringify(designData));
+      return { id: designId, designData };
     } catch (error) {
       console.warn('Backend not available, using local storage fallback');
       const designId = Date.now().toString();
