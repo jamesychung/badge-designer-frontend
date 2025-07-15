@@ -293,8 +293,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                 </div>
                 <input
                   type="text"
-                  className="border rounded px-3 py-2 text-base w-full min-w-[120px]"
-                  style={{ backgroundColor: '#fff' }}
+                  className="border rounded px-3 py-2 text-base w-full min-w-[120px] text-gray-900 bg-white placeholder-gray-400 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
                   value={line.text}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => onLineChange(idx, { text: e.target.value })}
                   placeholder={`Line ${idx + 1}`}
@@ -306,7 +305,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                     <div className="flex gap-1 items-center min-w-0">
                       <span className="font-semibold text-sm mr-1">Font:</span>
                       <select
-                        className="border rounded px-2 py-1 text-sm"
+                        className="border rounded px-2 py-1 text-sm text-gray-900 bg-white dark:bg-gray-900 dark:text-white"
                         value={line.fontFamily}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onLineChange(idx, { fontFamily: e.target.value })}
                         disabled={!editable}
@@ -322,7 +321,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                     <div className="flex gap-1 items-center min-w-0">
                       <span className="font-semibold text-sm mr-1">Format:</span>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center ${line.bold ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center ${line.bold ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onLineChange(idx, { bold: !line.bold }); }}
                         title="Bold"
                         disabled={!editable}
@@ -330,7 +329,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                         <span className="font-bold text-lg">B</span>
                       </button>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center ${line.italic ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center ${line.italic ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onLineChange(idx, { italic: !line.italic }); }}
                         title="Italic"
                         disabled={!editable}
@@ -338,7 +337,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                         <span className="italic text-lg">I</span>
                       </button>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center ${line.underline ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center ${line.underline ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onLineChange(idx, { underline: !line.underline }); }}
                         title="Underline"
                         disabled={!editable}
@@ -350,7 +349,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                     <div className="flex gap-1 items-center min-w-0">
                       <span className="font-semibold text-sm mr-1">Align:</span>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'left' ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'left' ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onAlignmentChange(idx, 'left'); }}
                         title="Align Left"
                         disabled={!editable}
@@ -360,7 +359,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                         </svg>
                       </button>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'center' ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'center' ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onAlignmentChange(idx, 'center'); }}
                         title="Align Center"
                         disabled={!editable}
@@ -370,7 +369,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
                         </svg>
                       </button>
                       <button
-                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'right' ? 'bg-gray-100 border-gray-400' : ''}`}
+                        className={`control-button w-7 h-7 flex items-center justify-center p-0 ${line.alignment === 'right' ? 'bg-gray-100 border-gray-400 text-gray-900 dark:bg-gray-800 dark:text-white' : 'bg-white text-gray-900 dark:bg-gray-900 dark:text-white'}`}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); onAlignmentChange(idx, 'right'); }}
                         title="Align Right"
                         disabled={!editable}
@@ -900,7 +899,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
               <input type="file" accept=".csv" onChange={handleCsvFile} className="mb-2" />
             </div>
             <textarea
-              className="w-full border rounded p-2 mb-2 text-sm"
+              className="w-full border rounded p-2 mb-2 text-sm text-gray-900 bg-white dark:bg-gray-900 dark:text-white"
               rows={4}
               placeholder="Paste CSV data here..."
               value={csvText}
