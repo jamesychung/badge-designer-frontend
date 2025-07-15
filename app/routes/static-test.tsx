@@ -1,8 +1,9 @@
+// /app/routes/static-test.tsx
 export default function StaticTest() {
   return (
     <div>
-      <h1>✅ Static Test Route Loaded</h1>
-      <p>This confirms your Remix app routes are working!</p>
+      <h1>✅ It works!</h1>
+      <p>This is the /static-test route.</p>
     </div>
   );
 } 
