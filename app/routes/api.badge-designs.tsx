@@ -2,7 +2,10 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 
 export const action: ActionFunction = async ({ request }) => {
+  console.log('API route - Action function called');
+  
   if (request.method !== "POST") {
+    console.log('API route - Method not allowed:', request.method);
     return json({ error: "Method not allowed" }, { status: 405 });
   }
 
@@ -10,9 +13,11 @@ export const action: ActionFunction = async ({ request }) => {
     console.log('API route - Starting request processing');
     
     const body = await request.json();
+    console.log('API route - Raw body received:', body);
+    
     const { designData, shopId, productId } = body;
     
-    console.log('API route - received data:', { 
+    console.log('API route - extracted data:', { 
       designData: designData ? 'present' : 'missing', 
       shopId, 
       productId,
@@ -48,6 +53,13 @@ export const action: ActionFunction = async ({ request }) => {
     const gadgetUrl = "https://allqualitybadges.gadget.app/api/badge-designs";
     console.log('API route - Calling Gadget URL:', gadgetUrl);
     
+    console.log('API route - Request details:', {
+      url: gadgetUrl,
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(gadgetPayload)
+    });
+    
     const response = await fetch(gadgetUrl, {
       method: "POST",
       headers: {
@@ -57,6 +69,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
 
     console.log('API route - Gadget response status:', response.status, response.statusText);
+    console.log('API route - Gadget response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -82,7 +95,8 @@ export const action: ActionFunction = async ({ request }) => {
     console.error("API route - Error details:", {
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : 'Unknown'
+      name: error instanceof Error ? error.name : 'Unknown',
+      error: error
     });
     return json({ 
       error: "Failed to save design",
@@ -92,6 +106,8 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  console.log('API route - Loader function called');
+  
   const url = new URL(request.url);
   const designId = url.searchParams.get("id");
   const shopId = url.searchParams.get("shopId");
