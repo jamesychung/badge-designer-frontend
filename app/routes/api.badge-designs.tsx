@@ -50,7 +50,8 @@ export const action: ActionFunction = async ({ request }) => {
     });
     
     // Use the Gadget client library approach (same as playground)
-    const gadgetUrl = "https://allqualitybadges.gadget.app/api/badge-designs";
+    // This should use the internal API endpoint, not the public REST API
+    const gadgetUrl = "https://allqualitybadges.gadget.app/api/badgeDesigns";
     console.log('API route - Calling Gadget URL:', gadgetUrl);
     
     console.log('API route - Request details:', {
@@ -118,7 +119,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     // Use the Gadget client library approach for getting badge design
-    const response = await fetch(`https://allqualitybadges.gadget.app/api/badge-designs/${designId}`, {
+    const response = await fetch(`https://allqualitybadges.gadget.app/api/badgeDesigns/${designId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
