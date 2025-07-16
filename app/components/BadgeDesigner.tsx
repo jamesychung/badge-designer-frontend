@@ -196,18 +196,16 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
   const addToCart = async () => {
     try {
       // Get the correct variant ID based on backing type
-      // This should be replaced with actual Shopify variant IDs
       const getVariantId = (backingType: string) => {
-        // These are placeholder IDs - replace with actual Shopify variant IDs
         switch (backingType) {
           case 'pin':
-            return '123456789'; // Replace with actual Pin variant ID
+            return '47037830299903'; // Pin variant ID
           case 'magnetic':
-            return '123456790'; // Replace with actual Magnetic variant ID
+            return '47037830332671'; // Magnetic variant ID
           case 'adhesive':
-            return '123456791'; // Replace with actual Adhesive variant ID
+            return '47037830365439'; // Adhesive variant ID
           default:
-            return '123456789'; // Default to Pin
+            return '47037830299903'; // Default to Pin
         }
       };
 
