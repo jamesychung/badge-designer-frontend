@@ -49,23 +49,40 @@ export const action: ActionFunction = async ({ request }) => {
       designData: gadgetPayload.designData ? 'present' : 'missing'
     });
     
-    // Use the Gadget client library approach - this should work like in the playground
-    const gadgetUrl = "https://allqualitybadges.gadget.app/api/badgeDesigns";
-    console.log('API route - Calling Gadget URL:', gadgetUrl);
+    // Use the correct GraphQL mutation that works in the playground
+    const gadgetUrl = "https://allqualitybadges.gadget.app/api/graphql";
+    console.log('API route - Calling Gadget GraphQL URL:', gadgetUrl);
     
-    console.log('API route - Request details:', {
-      url: gadgetUrl,
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(gadgetPayload)
-    });
+    const graphqlQuery = `
+      mutation CreateBadgeDesign($badgeDesign: CreateBadgeDesignInput!) {
+        createBadgeDesign(badgeDesign: $badgeDesign) {
+          success
+          badgeDesign {
+            id
+            designId
+            shopId
+            status
+          }
+        }
+      }
+    `;
+    
+    const graphqlPayload = {
+      query: graphqlQuery,
+      variables: {
+        badgeDesign: gadgetPayload
+      }
+    };
+    
+    console.log('API route - GraphQL payload:', JSON.stringify(graphqlPayload, null, 2));
     
     const response = await fetch(gadgetUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
       },
-      body: JSON.stringify(gadgetPayload),
+      body: JSON.stringify(graphqlPayload),
     });
 
     console.log('API route - Gadget response status:', response.status, response.statusText);
@@ -85,10 +102,19 @@ export const action: ActionFunction = async ({ request }) => {
     const result = await response.json();
     console.log('API route - Gadget response:', result);
     
+    if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
+      throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+    }
+    
+    if (!result.data?.createBadgeDesign?.success) {
+      throw new Error('Badge design creation failed');
+    }
+    
     return json({
       success: true,
-      id: result.id,
-      designId: result.designId,
+      id: result.data.createBadgeDesign.badgeDesign.id,
+      designId: result.data.createBadgeDesign.badgeDesign.designId,
       message: "Design saved successfully"
     });
   } catch (error) {
@@ -117,12 +143,38 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   try {
-    // Use the Gadget client library approach for getting badge design
-    const response = await fetch(`https://allqualitybadges.gadget.app/api/badgeDesigns/${designId}`, {
-      method: "GET",
+    // Use GraphQL for getting badge design
+    const gadgetUrl = "https://allqualitybadges.gadget.app/api/graphql";
+    
+    const graphqlQuery = `
+      query GetBadgeDesign($id: GadgetID!) {
+        badgeDesign(id: $id) {
+          id
+          designId
+          shopId
+          status
+          designData
+          backgroundColor
+          backingType
+          textLines
+        }
+      }
+    `;
+    
+    const graphqlPayload = {
+      query: graphqlQuery,
+      variables: {
+        id: designId
+      }
+    };
+    
+    const response = await fetch(gadgetUrl, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json"
       },
+      body: JSON.stringify(graphqlPayload),
     });
 
     if (!response.ok) {
@@ -131,9 +183,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const result = await response.json();
     
+    if (result.errors) {
+      throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
+    }
+    
     return json({
       success: true,
-      design: result
+      design: result.data?.badgeDesign
     });
   } catch (error) {
     console.error("Error loading badge design:", error);

@@ -117,6 +117,56 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   }
   
+  // Test 5: Check if there's a different endpoint structure
+  try {
+    console.log('Testing badgeDesign endpoint (singular)...');
+    const response = await fetch("https://allqualitybadges.gadget.app/api/badgeDesign", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    testResults.push({
+      endpoint: "/api/badgeDesign",
+      method: "GET",
+      status: response.status,
+      statusText: response.statusText,
+      success: response.ok
+    });
+  } catch (error) {
+    testResults.push({
+      endpoint: "/api/badgeDesign",
+      method: "GET",
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+  
+  // Test 6: Check if there's a REST API endpoint
+  try {
+    console.log('Testing REST API endpoint...');
+    const response = await fetch("https://allqualitybadges.gadget.app/api/rest/badgeDesigns", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    testResults.push({
+      endpoint: "/api/rest/badgeDesigns",
+      method: "GET",
+      status: response.status,
+      statusText: response.statusText,
+      success: response.ok
+    });
+  } catch (error) {
+    testResults.push({
+      endpoint: "/api/rest/badgeDesigns",
+      method: "GET",
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+  
   console.log('Test results:', testResults);
   
   return json({
