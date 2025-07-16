@@ -10,11 +10,15 @@
       }
     },
     "routeIdToServerBundleId": {
+      "routes/api.test-endpoints": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.badge-designs": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/deployment-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.test-save": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/working-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/iframe-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/static-test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/test-route": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/simple": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_index": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/test": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0"
@@ -26,10 +30,37 @@
         "file": "app/root.tsx",
         "config": {}
       },
+      "routes/api.test-endpoints": {
+        "file": "app/routes/api.test-endpoints.tsx",
+        "id": "routes/api.test-endpoints",
+        "path": "api/test-endpoints",
+        "parentId": "root",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.badge-designs": {
+        "file": "app/routes/api.badge-designs.tsx",
+        "id": "routes/api.badge-designs",
+        "path": "api/badge-designs",
+        "parentId": "root",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/deployment-test": {
         "file": "app/routes/deployment-test.tsx",
         "id": "routes/deployment-test",
         "path": "deployment-test",
+        "parentId": "root",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.test-save": {
+        "file": "app/routes/api.test-save.tsx",
+        "id": "routes/api.test-save",
+        "path": "api/test-save",
         "parentId": "root",
         "config": {
           "runtime": "nodejs"
@@ -66,6 +97,15 @@
         "file": "app/routes/test-route.tsx",
         "id": "routes/test-route",
         "path": "test-route",
+        "parentId": "root",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.test": {
+        "file": "app/routes/api.test.tsx",
+        "id": "routes/api.test",
+        "path": "api/test",
         "parentId": "root",
         "config": {
           "runtime": "nodejs"
@@ -121,10 +161,28 @@
         "id": "root",
         "file": "root.tsx"
       },
+      "routes/api.test-endpoints": {
+        "file": "routes/api.test-endpoints.tsx",
+        "id": "routes/api.test-endpoints",
+        "path": "api/test-endpoints",
+        "parentId": "root"
+      },
+      "routes/api.badge-designs": {
+        "file": "routes/api.badge-designs.tsx",
+        "id": "routes/api.badge-designs",
+        "path": "api/badge-designs",
+        "parentId": "root"
+      },
       "routes/deployment-test": {
         "file": "routes/deployment-test.tsx",
         "id": "routes/deployment-test",
         "path": "deployment-test",
+        "parentId": "root"
+      },
+      "routes/api.test-save": {
+        "file": "routes/api.test-save.tsx",
+        "id": "routes/api.test-save",
+        "path": "api/test-save",
         "parentId": "root"
       },
       "routes/working-test": {
@@ -149,6 +207,12 @@
         "file": "routes/test-route.tsx",
         "id": "routes/test-route",
         "path": "test-route",
+        "parentId": "root"
+      },
+      "routes/api.test": {
+        "file": "routes/api.test.tsx",
+        "id": "routes/api.test",
+        "path": "api/test",
         "parentId": "root"
       },
       "routes/simple": {

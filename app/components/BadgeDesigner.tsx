@@ -18,7 +18,7 @@ import { handleDownloadPDF } from '../utils/pdfGenerator';
 import { BadgeTextLinesHeader } from './BadgeTextLinesHeader';
 import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
-import { api, useBadgeDesignAPI } from '../utils/api';
+import { api } from '../utils/api';
 import { generateCartThumbnail } from '../utils/badgeThumbnail';
 import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
 
@@ -69,8 +69,7 @@ const MIN_FONT_SIZE = 8;
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop }) => {
   console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId);
   
-  // Use Gadget hooks for API calls
-  const { createBadgeDesign } = useBadgeDesignAPI();
+
   
   const LINE_HEIGHT_MULTIPLIER = 1.3;
   const [badge, setBadge] = useState({
@@ -207,23 +206,19 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       
       console.log('Creating badge design with Gadget hook:', badgeDesignData);
       
-      // Use Gadget hook to create the badge design
-      const result = await createBadgeDesign(badgeDesignData);
+      // Use the api.saveBadgeDesign method
+      const savedDesign = await api.saveBadgeDesign(badgeDesignData, shopData);
       
-      if (result.error) {
-        throw new Error(`Failed to save design: ${result.error.message}`);
-      }
-      
-      console.log('Badge design saved successfully:', result);
-      alert(`Badge design saved! Design ID: ${result.badgeDesign?.id || 'Unknown'}`);
+      console.log('Badge design saved successfully:', savedDesign);
+      alert(`Badge design saved! Design ID: ${savedDesign.id || 'Unknown'}`);
       
       // Also send to parent window for Shopify integration
       api.sendToParent({
         action: 'design-saved',
         payload: {
-          id: result.badgeDesign?.id,
-          designData: badgeDesignData.designData,
-          designId: badgeDesignData.designId
+          id: savedDesign.id,
+          designData: badgeDesignData,
+          designId: savedDesign.designId
         }
       });
       
