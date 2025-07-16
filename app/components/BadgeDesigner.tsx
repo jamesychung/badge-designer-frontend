@@ -24,6 +24,7 @@ import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth
 
 interface BadgeDesignerProps {
   productId?: string | null;
+  shop?: string | null;
 }
 
 interface BadgeEditorPanelProps {
@@ -65,7 +66,7 @@ const badgeWidth = 300;
 const badgeHeight = 100;
 const MIN_FONT_SIZE = 8;
 
-const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) => {
+const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop }) => {
   const LINE_HEIGHT_MULTIPLIER = 1.3;
   const [badge, setBadge] = useState({
     lines: [
@@ -174,7 +175,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
   const saveBadge = async () => {
     try {
       // Get current shop data
-      const shopData = getCurrentShop();
+      const shopData = getCurrentShop(_shop);
       if (!shopData) {
         alert('Shop information not found. Please reload the page.');
         return;
@@ -223,7 +224,11 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
       const thumbnailImage = await generateCartThumbnail(badge);
 
       // Get current shop data
-      const shopData = getCurrentShop();
+      const shopData = getCurrentShop(_shop);
+      if (!shopData) {
+        alert('Shop information not found. Please reload the page.');
+        return;
+      }
       
       const badgeData = {
         variantId: getVariantId(badge.backing),

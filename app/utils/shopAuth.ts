@@ -28,12 +28,26 @@ export function extractShopFromUrl(urlSearchParams: URLSearchParams): ShopAuthDa
 }
 
 /**
- * Get shop information from current URL
+ * Get shop information from current URL or provided shop parameter
+ * @param shopParam Optional shop parameter from props
  * @returns ShopAuthData object or null
  */
-export function getCurrentShop(): ShopAuthData | null {
+export function getCurrentShop(shopParam?: string | null): ShopAuthData | null {
   if (typeof window === 'undefined') return null;
   
+  // If shop parameter is provided, use it
+  if (shopParam) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+    
+    return {
+      shopId: shopParam,
+      shopDomain: shopParam,
+      productId: productId || undefined
+    };
+  }
+  
+  // Otherwise, try to get from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   return extractShopFromUrl(urlParams);
 }

@@ -13,6 +13,7 @@ export const meta: MetaFunction = () => {
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const productId = url.searchParams.get("product");
+  const shop = url.searchParams.get("shop");
   
   // Add headers for iframe embedding
   const headers = new Headers();
@@ -20,15 +21,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   headers.set("Content-Security-Policy", "frame-ancestors *");
   headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
   
-  return json({ productId, timestamp: Date.now() }, { headers });
+  return json({ productId, shop, timestamp: Date.now() }, { headers });
 };
 
 export default function Index() {
-  const { productId } = useLoaderData<typeof loader>();
+  const { productId, shop } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <BadgeDesigner productId={productId} />
+      <BadgeDesigner productId={productId} shop={shop} />
     </div>
   );
 }
