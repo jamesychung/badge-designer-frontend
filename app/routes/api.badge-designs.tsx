@@ -7,10 +7,22 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   try {
+    console.log('API route - Starting request processing');
+    
     const body = await request.json();
     const { designData, shopId, productId } = body;
     
-    console.log('API route - received data:', { designData, shopId, productId });
+    console.log('API route - received data:', { 
+      designData: designData ? 'present' : 'missing', 
+      shopId, 
+      productId,
+      designDataKeys: designData ? Object.keys(designData) : 'none'
+    });
+
+    if (!shopId) {
+      console.error('API route - Missing shopId');
+      return json({ error: "shopId is required" }, { status: 400 });
+    }
 
     // Prepare the payload for Gadget
     const gadgetPayload = {
@@ -27,10 +39,16 @@ export const action: ActionFunction = async ({ request }) => {
       backingType: designData.badge?.backing || "pin",
     };
     
-    console.log('API route - sending to Gadget:', gadgetPayload);
+    console.log('API route - sending to Gadget:', {
+      ...gadgetPayload,
+      designData: gadgetPayload.designData ? 'present' : 'missing'
+    });
     
     // Call Gadget API from server-side (no CORS issues)
-    const response = await fetch("https://allqualitybadges-development.gadget.app/public/api/badge-designs", {
+    const gadgetUrl = "https://allqualitybadges-development.gadget.app/public/api/badge-designs";
+    console.log('API route - Calling Gadget URL:', gadgetUrl);
+    
+    const response = await fetch(gadgetUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,14 +58,21 @@ export const action: ActionFunction = async ({ request }) => {
       body: JSON.stringify(gadgetPayload),
     });
 
+    console.log('API route - Gadget response status:', response.status, response.statusText);
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Gadget API error response:', errorText);
+      console.error('Gadget API error details:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('API route - Gadget response:', result);
+    console.log('API route - Gadget response success:', result);
     
     return json({
       success: true,
@@ -56,8 +81,15 @@ export const action: ActionFunction = async ({ request }) => {
       message: "Design saved successfully"
     });
   } catch (error) {
-    console.error("Error saving badge design:", error);
-    return json({ error: "Failed to save design" }, { status: 500 });
+    console.error("API route - Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'Unknown'
+    });
+    return json({ 
+      error: "Failed to save design",
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 };
 
