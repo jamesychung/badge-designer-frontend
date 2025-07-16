@@ -34,7 +34,9 @@ export const action: ActionFunction = async ({ request }) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Gadget API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Gadget API error response:', errorText);
+      throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const result = await response.json();
