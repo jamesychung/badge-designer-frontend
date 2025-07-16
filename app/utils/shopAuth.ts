@@ -105,42 +105,31 @@ export async function saveBadgeDesign(
   shopData: ShopAuthData
 ): Promise<any> {
   try {
-    // Prepare the payload for Gadget
-    const gadgetPayload = {
-      designData: designData.badge || designData,
+    const payload = {
+      designData,
       shopId: shopData.shopId,
       productId: shopData.productId,
-      designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      status: "saved",
-      basePrice: 9.99,
-      backingPrice: 0,
-      totalPrice: 9.99,
-      textLines: designData.badge?.lines || [],
-      backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
-      backingType: designData.badge?.backing || "pin",
     };
     
-    console.log('Calling Gadget API with payload:', gadgetPayload);
+    console.log('Calling Remix API route with payload:', payload);
     
-    // Call Gadget public API directly
-    const response = await fetch('https://allqualitybadges-development.gadget.app/public/api/badge-designs', {
+    // Call our Remix API route (which will handle the Gadget API call server-side)
+    const response = await fetch('/api/badge-designs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shop-Domain': shopData.shopDomain,
-        'X-Shop-ID': shopData.shopId,
       },
-      body: JSON.stringify(gadgetPayload),
+      body: JSON.stringify(payload),
     });
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gadget API error response:', errorText);
-      throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
+      console.error('API route error response:', errorText);
+      throw new Error(`API route error: ${response.status} ${response.statusText} - ${errorText}`);
     }
     
     const result = await response.json();
-    console.log('Gadget API success response:', result);
+    console.log('API route success response:', result);
     
     return result;
   } catch (error) {

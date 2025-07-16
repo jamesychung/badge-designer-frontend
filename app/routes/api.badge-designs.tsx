@@ -12,12 +12,12 @@ export const action: ActionFunction = async ({ request }) => {
     
     console.log('API route - received data:', { designData, shopId, productId });
 
-    // Call Gadget backend API
+    // Prepare the payload for Gadget
     const gadgetPayload = {
-      designData,
+      designData: designData.badge || designData,
       shopId,
       productId,
-      designId: Date.now().toString(),
+      designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       status: "saved",
       basePrice: 9.99,
       backingPrice: 0,
@@ -29,7 +29,8 @@ export const action: ActionFunction = async ({ request }) => {
     
     console.log('API route - sending to Gadget:', gadgetPayload);
     
-    const response = await fetch("https://allqualitybadges-development.gadget.app/api/badge-designs", {
+    // Call Gadget API from server-side (no CORS issues)
+    const response = await fetch("https://allqualitybadges-development.gadget.app/public/api/badge-designs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,6 +47,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     const result = await response.json();
+    console.log('API route - Gadget response:', result);
     
     return json({
       success: true,
@@ -70,7 +72,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     // Call Gadget backend API to get design
-    const response = await fetch(`https://allqualitybadges-development.gadget.app/api/badge-designs/${designId}`, {
+    const response = await fetch(`https://allqualitybadges-development.gadget.app/public/api/badge-designs/${designId}`, {
       headers: {
         "X-Shop-Domain": shopId || "",
         "X-Shop-ID": shopId || "",
