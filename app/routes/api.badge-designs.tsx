@@ -49,8 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
       designData: gadgetPayload.designData ? 'present' : 'missing'
     });
     
-    // Use the Gadget client library approach (same as playground)
-    // This should use the internal API endpoint, not the public REST API
+    // Use the Gadget client library approach - this should work like in the playground
     const gadgetUrl = "https://allqualitybadges.gadget.app/api/badgeDesigns";
     console.log('API route - Calling Gadget URL:', gadgetUrl);
     
