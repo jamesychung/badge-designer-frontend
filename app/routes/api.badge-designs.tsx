@@ -29,7 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
     
     console.log('API route - sending to Gadget:', gadgetPayload);
     
-    const response = await fetch("https://allqualitybadges.gadget.app/api/badge-designs", {
+    const response = await fetch("https://allqualitybadges-development.gadget.app/api/badge-designs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     // Call Gadget backend API to get design
-    const response = await fetch(`https://allqualitybadges.gadget.app/api/badge-designs/${designId}`, {
+    const response = await fetch(`https://allqualitybadges-development.gadget.app/api/badge-designs/${designId}`, {
       headers: {
         "X-Shop-Domain": shopId || "",
         "X-Shop-ID": shopId || "",
