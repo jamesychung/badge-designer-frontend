@@ -592,6 +592,26 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
               Add Multiple Badges
             </button>
           </div>
+          {/* Backing Options */}
+          <div className="mb-4">
+            <h3 className="font-semibold text-gray-700 mb-2">Backing Type</h3>
+            <div className="flex gap-3">
+              {backingOptions.map((option) => (
+                <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="backing"
+                    value={option.value}
+                    checked={badge.backing === option.value}
+                    onChange={(e) => setBadge({ ...badge, backing: e.target.value })}
+                    className="text-blue-600"
+                  />
+                  <span className="text-sm">{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div className="flex justify-end mt-2 mb-4 gap-2">
             <button
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
