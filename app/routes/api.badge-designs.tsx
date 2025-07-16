@@ -24,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
       return json({ error: "shopId is required" }, { status: 400 });
     }
 
-    // Prepare the payload for Gadget
+    // Prepare the payload for Gadget GraphQL
     const gadgetPayload = {
       designData: designData.badge || designData,
       shopId,
@@ -39,45 +39,95 @@ export const action: ActionFunction = async ({ request }) => {
       backingType: designData.badge?.backing || "pin",
     };
     
-    console.log('API route - sending to Gadget:', {
+    console.log('API route - sending to Gadget GraphQL:', {
       ...gadgetPayload,
       designData: gadgetPayload.designData ? 'present' : 'missing'
     });
     
-    // Call Gadget API from server-side (no CORS issues)
-    const gadgetUrl = "https://allqualitybadges.gadget.app/public/api/badge-designs";
-    console.log('API route - Calling Gadget URL:', gadgetUrl);
+    // GraphQL mutation for creating badge design
+    const mutation = `
+      mutation CreateBadgeDesign($input: CreateBadgeDesignInput!) {
+        badgeDesignCreate(input: $input) {
+          badgeDesign {
+            id
+            shopId
+            productId
+            designId
+            status
+            createdAt
+            updatedAt
+          }
+          errors {
+            message
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      input: {
+        shopId: gadgetPayload.shopId,
+        productId: gadgetPayload.productId,
+        designId: gadgetPayload.designId,
+        status: gadgetPayload.status,
+        designData: gadgetPayload.designData,
+        backgroundColor: gadgetPayload.backgroundColor,
+        backingType: gadgetPayload.backingType,
+        basePrice: gadgetPayload.basePrice,
+        backingPrice: gadgetPayload.backingPrice,
+        totalPrice: gadgetPayload.totalPrice,
+        textLines: gadgetPayload.textLines,
+      }
+    };
+    
+    // Call Gadget GraphQL API
+    const gadgetUrl = "https://allqualitybadges.gadget.app/api/graphql";
+    console.log('API route - Calling Gadget GraphQL URL:', gadgetUrl);
     
     const response = await fetch(gadgetUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Shop-Domain": shopId,
-        "X-Shop-ID": shopId,
       },
-      body: JSON.stringify(gadgetPayload),
+      body: JSON.stringify({ query: mutation, variables }),
     });
 
-    console.log('API route - Gadget response status:', response.status, response.statusText);
+    console.log('API route - Gadget GraphQL response status:', response.status, response.statusText);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gadget API error response:', errorText);
-      console.error('Gadget API error details:', {
+      console.error('Gadget GraphQL error response:', errorText);
+      console.error('Gadget GraphQL error details:', {
         status: response.status,
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries())
       });
-      throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(`Gadget GraphQL error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('API route - Gadget response success:', result);
+    console.log('API route - Gadget GraphQL response:', result);
+    
+    // Check for GraphQL errors
+    if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
+      throw new Error(`GraphQL errors: ${result.errors.map((e: any) => e.message).join(', ')}`);
+    }
+    
+    if (result.data?.badgeDesignCreate?.errors?.length > 0) {
+      console.error('Badge design creation errors:', result.data.badgeDesignCreate.errors);
+      throw new Error(`Badge design creation errors: ${result.data.badgeDesignCreate.errors.map((e: any) => e.message).join(', ')}`);
+    }
+    
+    const badgeDesign = result.data?.badgeDesignCreate?.badgeDesign;
+    if (!badgeDesign) {
+      throw new Error('No badge design returned from GraphQL mutation');
+    }
     
     return json({
       success: true,
-      id: result.id,
-      designId: result.designId,
+      id: badgeDesign.id,
+      designId: badgeDesign.designId,
       message: "Design saved successfully"
     });
   } catch (error) {
@@ -103,23 +153,56 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   try {
-    // Call Gadget backend API to get design
-    const response = await fetch(`https://allqualitybadges.gadget.app/public/api/badge-designs/${designId}`, {
+    // GraphQL query for getting badge design
+    const query = `
+      query GetBadgeDesign($id: GadgetID!) {
+        badgeDesign(id: $id) {
+          id
+          shopId
+          productId
+          designId
+          status
+          designData
+          backgroundColor
+          backingType
+          basePrice
+          backingPrice
+          totalPrice
+          textLines
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+
+    const variables = { id: designId };
+    
+    const response = await fetch("https://allqualitybadges.gadget.app/api/graphql", {
+      method: "POST",
       headers: {
-        "X-Shop-Domain": shopId || "",
-        "X-Shop-ID": shopId || "",
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ query, variables }),
     });
 
     if (!response.ok) {
-      throw new Error(`Gadget API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Gadget GraphQL error: ${response.status} ${response.statusText}`);
     }
 
     const result = await response.json();
     
+    if (result.errors) {
+      throw new Error(`GraphQL errors: ${result.errors.map((e: any) => e.message).join(', ')}`);
+    }
+    
+    const badgeDesign = result.data?.badgeDesign;
+    if (!badgeDesign) {
+      throw new Error('Badge design not found');
+    }
+    
     return json({
       success: true,
-      design: result
+      design: badgeDesign
     });
   } catch (error) {
     console.error("Error loading badge design:", error);
