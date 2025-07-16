@@ -19,6 +19,7 @@ import { BadgeTextLinesHeader } from './BadgeTextLinesHeader';
 import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
 import { api } from '../utils/api';
+import { generateCartThumbnail } from '../utils/badgeThumbnail';
 
 interface BadgeDesignerProps {
   productId?: string | null;
@@ -209,6 +210,9 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
         }
       };
 
+      // Generate thumbnail image of the badge design
+      const thumbnailImage = await generateCartThumbnail(badge);
+
       const badgeData = {
         variantId: getVariantId(badge.backing),
         productId: _productId, // Keep product ID for reference
@@ -221,7 +225,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
         backing: badge.backing,
         designId: Date.now().toString(),
         fullDesignData: badge,
-        price: totalPrice
+        price: totalPrice,
+        thumbnailImage: thumbnailImage // Add the generated thumbnail
       };
       
       await api.addToCart(badgeData);
