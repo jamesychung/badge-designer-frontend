@@ -20,6 +20,7 @@ import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
 import { api } from '../utils/api';
 import { generateCartThumbnail } from '../utils/badgeThumbnail';
+import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
 
 interface BadgeDesignerProps {
   productId?: string | null;
@@ -172,6 +173,13 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
   };
   const saveBadge = async () => {
     try {
+      // Get current shop data
+      const shopData = getCurrentShop();
+      if (!shopData) {
+        alert('Shop information not found. Please reload the page.');
+        return;
+      }
+      
       const designData = {
         productId: _productId,
         badge,
@@ -179,7 +187,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
         designId: Date.now().toString()
       };
       
-      const savedDesign = await api.saveBadgeDesign(designData);
+      // Save with shop authentication
+      const savedDesign = await saveBadgeDesign(designData, shopData);
       alert(`Badge design saved! Design ID: ${savedDesign.id}`);
       
       // Also send to parent window for Shopify integration
@@ -213,9 +222,13 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId }) 
       // Generate thumbnail image of the badge design
       const thumbnailImage = await generateCartThumbnail(badge);
 
+      // Get current shop data
+      const shopData = getCurrentShop();
+      
       const badgeData = {
         variantId: getVariantId(badge.backing),
         productId: _productId, // Keep product ID for reference
+        shopId: shopData?.shopId, // Add shop ID for multi-tenant support
         line1: badge.lines[0]?.text || '',
         line2: badge.lines[1]?.text || '',
         line3: badge.lines[2]?.text || '',
