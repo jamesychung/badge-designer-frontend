@@ -9,8 +9,26 @@ export const action: ActionFunction = async ({ request }) => {
   try {
     const body = await request.json();
     const { designData, shopId, productId } = body;
+    
+    console.log('API route - received data:', { designData, shopId, productId });
 
     // Call Gadget backend API
+    const gadgetPayload = {
+      designData,
+      shopId,
+      productId,
+      designId: Date.now().toString(),
+      status: "saved",
+      basePrice: 9.99,
+      backingPrice: 0,
+      totalPrice: 9.99,
+      textLines: designData.badge?.lines || [],
+      backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
+      backingType: designData.badge?.backing || "pin",
+    };
+    
+    console.log('API route - sending to Gadget:', gadgetPayload);
+    
     const response = await fetch("https://allqualitybadges.gadget.app/api/badge-designs", {
       method: "POST",
       headers: {
@@ -18,19 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
         "X-Shop-Domain": shopId,
         "X-Shop-ID": shopId,
       },
-      body: JSON.stringify({
-        designData,
-        shopId,
-        productId,
-        designId: Date.now().toString(),
-        status: "saved",
-        basePrice: 9.99,
-        backingPrice: 0,
-        totalPrice: 9.99,
-        textLines: designData.badge?.lines || [],
-        backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
-        backingType: designData.badge?.backing || "pin",
-      }),
+      body: JSON.stringify(gadgetPayload),
     });
 
     if (!response.ok) {
