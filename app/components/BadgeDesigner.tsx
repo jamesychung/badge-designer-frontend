@@ -18,7 +18,7 @@ import { handleDownloadPDF } from '../utils/pdfGenerator';
 import { BadgeTextLinesHeader } from './BadgeTextLinesHeader';
 import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
-import { api } from '../utils/api';
+import { api, useBadgeDesignAPI } from '../utils/api';
 import { generateCartThumbnail } from '../utils/badgeThumbnail';
 import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
 
@@ -68,6 +68,9 @@ const MIN_FONT_SIZE = 8;
 
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop }) => {
   console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId);
+  
+  // Use Gadget hooks for API calls
+  const { createBadgeDesign } = useBadgeDesignAPI();
   
   const LINE_HEIGHT_MULTIPLIER = 1.3;
   const [badge, setBadge] = useState({
@@ -184,21 +187,44 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       }
       console.log('Saving badge design - shop data:', shopData);
       
-      const designData = {
+      // Prepare the badge design data for Gadget
+      const badgeDesignData = {
+        shopId: shopData.shopId,
         productId: _productId,
-        badge,
-        timestamp: new Date().toISOString(),
-        designId: Date.now().toString()
+        designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        status: "saved",
+        designData: {
+          badge,
+          timestamp: new Date().toISOString(),
+        },
+        backgroundColor: badge.backgroundColor,
+        backingType: badge.backing,
+        basePrice: 9.99,
+        backingPrice: badge.backing === 'magnetic' ? 2.00 : badge.backing === 'adhesive' ? 1.00 : 0,
+        totalPrice: 9.99 + (badge.backing === 'magnetic' ? 2.00 : badge.backing === 'adhesive' ? 1.00 : 0),
+        textLines: badge.lines,
       };
       
-      // Save with shop authentication
-      const savedDesign = await saveBadgeDesign(designData, shopData);
-      alert(`Badge design saved! Design ID: ${savedDesign.id}`);
+      console.log('Creating badge design with Gadget hook:', badgeDesignData);
+      
+      // Use Gadget hook to create the badge design
+      const result = await createBadgeDesign(badgeDesignData);
+      
+      if (result.error) {
+        throw new Error(`Failed to save design: ${result.error.message}`);
+      }
+      
+      console.log('Badge design saved successfully:', result);
+      alert(`Badge design saved! Design ID: ${result.badgeDesign?.id || 'Unknown'}`);
       
       // Also send to parent window for Shopify integration
       api.sendToParent({
         action: 'design-saved',
-        payload: savedDesign
+        payload: {
+          id: result.badgeDesign?.id,
+          designData: badgeDesignData.designData,
+          designId: badgeDesignData.designId
+        }
       });
       
     } catch (error) {
