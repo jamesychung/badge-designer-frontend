@@ -57,6 +57,10 @@ export const action: ActionFunction = async ({ request }) => {
       mutation CreateBadgeDesign($badgeDesign: CreateBadgeDesignInput!) {
         createBadgeDesign(badgeDesign: $badgeDesign) {
           success
+          errors {
+            message
+            code
+          }
           badgeDesign {
             id
             designId
@@ -100,15 +104,20 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     const result = await response.json();
-    console.log('API route - Gadget response:', result);
+    console.log('API route - Gadget response:', JSON.stringify(result, null, 2));
     
     if (result.errors) {
       console.error('GraphQL errors:', result.errors);
       throw new Error(`GraphQL errors: ${JSON.stringify(result.errors)}`);
     }
     
+    console.log('API route - Checking success field:', result.data?.createBadgeDesign?.success);
+    console.log('API route - Full createBadgeDesign result:', result.data?.createBadgeDesign);
+    
     if (!result.data?.createBadgeDesign?.success) {
-      throw new Error('Badge design creation failed');
+      const errors = result.data?.createBadgeDesign?.errors;
+      console.error('Badge design creation failed with errors:', errors);
+      throw new Error(`Badge design creation failed: ${JSON.stringify(errors)}`);
     }
     
     return json({
