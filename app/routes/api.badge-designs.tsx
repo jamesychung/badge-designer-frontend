@@ -45,7 +45,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
     
     // Call Gadget API from server-side (no CORS issues)
-    const gadgetUrl = "https://allqualitybadges-development.gadget.app/public/api/badge-designs";
+    const gadgetUrl = "https://allqualitybadges.gadget.app/public/api/badge-designs";
     console.log('API route - Calling Gadget URL:', gadgetUrl);
     
     const response = await fetch(gadgetUrl, {
@@ -104,7 +104,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     // Call Gadget backend API to get design
-    const response = await fetch(`https://allqualitybadges-development.gadget.app/public/api/badge-designs/${designId}`, {
+    const response = await fetch(`https://allqualitybadges.gadget.app/public/api/badge-designs/${designId}`, {
       headers: {
         "X-Shop-Domain": shopId || "",
         "X-Shop-ID": shopId || "",
