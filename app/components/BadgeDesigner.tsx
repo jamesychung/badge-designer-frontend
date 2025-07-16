@@ -67,6 +67,8 @@ const badgeHeight = 100;
 const MIN_FONT_SIZE = 8;
 
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop }) => {
+  console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId);
+  
   const LINE_HEIGHT_MULTIPLIER = 1.3;
   const [badge, setBadge] = useState({
     lines: [
@@ -180,6 +182,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         alert('Shop information not found. Please reload the page.');
         return;
       }
+      console.log('Saving badge design - shop data:', shopData);
       
       const designData = {
         productId: _productId,
