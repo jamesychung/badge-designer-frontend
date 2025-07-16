@@ -104,22 +104,49 @@ export async function saveBadgeDesign(
   designData: any,
   shopData: ShopAuthData
 ): Promise<any> {
-  const payload = {
-    ...designData,
-    shopId: shopData.shopId,
-    productId: shopData.productId,
-  };
-  
-  const response = await authenticatedApiCall(
-    '/api/badge-designs',
-    shopData,
-    {
+  try {
+    // Prepare the payload for Gadget
+    const gadgetPayload = {
+      designData: designData.badge || designData,
+      shopId: shopData.shopId,
+      productId: shopData.productId,
+      designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      status: "saved",
+      basePrice: 9.99,
+      backingPrice: 0,
+      totalPrice: 9.99,
+      textLines: designData.badge?.lines || [],
+      backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
+      backingType: designData.badge?.backing || "pin",
+    };
+    
+    console.log('Calling Gadget API with payload:', gadgetPayload);
+    
+    // Call Gadget public API directly
+    const response = await fetch('https://allqualitybadges-development.gadget.app/public/api/badge-designs', {
       method: 'POST',
-      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shop-Domain': shopData.shopDomain,
+        'X-Shop-ID': shopData.shopId,
+      },
+      body: JSON.stringify(gadgetPayload),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gadget API error response:', errorText);
+      throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
-  );
-  
-  return response.json();
+    
+    const result = await response.json();
+    console.log('Gadget API success response:', result);
+    
+    return result;
+  } catch (error) {
+    console.error('Error saving badge design:', error);
+    throw error;
+  }
 }
 
 /**

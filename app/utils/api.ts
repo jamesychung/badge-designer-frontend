@@ -10,6 +10,7 @@ const API_BASE_URL = GADGET_API_KEY ? `${GADGET_API_URL}/api` : `${GADGET_API_UR
 
 export interface BadgeDesignData {
   id?: string;
+  designId?: string;
   productId?: string;
   designData: any;
   createdAt?: string;
@@ -28,32 +29,61 @@ export interface ShopifyProduct {
 
 // API functions
 export const api = {
-  // Save badge design (using authenticated or public endpoint)
-  async saveBadgeDesign(designData: any): Promise<BadgeDesignData> {
+  // Save badge design (calling Gadget directly)
+  async saveBadgeDesign(designData: any, shopId?: string, productId?: string): Promise<BadgeDesignData> {
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
       
-      // Try to save to our API endpoint first
-      const response = await fetch('/api/badge-designs', {
+      // Add authentication if API key is available
+      if (GADGET_API_KEY) {
+        headers['Authorization'] = `Bearer ${GADGET_API_KEY}`;
+      }
+      
+      // Prepare the payload for Gadget
+      const gadgetPayload = {
+        designData,
+        shopId,
+        productId,
+        designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        status: "saved",
+        basePrice: 9.99,
+        backingPrice: 0,
+        totalPrice: 9.99,
+        textLines: designData.badge?.lines || [],
+        backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
+        backingType: designData.badge?.backing || "pin",
+      };
+      
+      console.log('Calling Gadget API with payload:', gadgetPayload);
+      
+      // Call Gadget public API directly
+      const response = await fetch(`${API_BASE_URL}/badge-designs`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ designData }),
+        body: JSON.stringify(gadgetPayload),
       });
       
-      if (response.ok) {
-        const result = await response.json();
-        return { id: result.designId, designData };
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Gadget API error response:', errorText);
+        throw new Error(`Gadget API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
+      
+      const result = await response.json();
+      console.log('Gadget API success response:', result);
+      
+      return { 
+        id: result.id, 
+        designData,
+        designId: result.designId 
+      };
+    } catch (error) {
+      console.error('Error saving badge design:', error);
       
       // Fallback to local storage if API is not available
       console.warn('Failed to save to backend, using local storage fallback');
-      const designId = Date.now().toString();
-      localStorage.setItem(`badge-design-${designId}`, JSON.stringify(designData));
-      return { id: designId, designData };
-    } catch (error) {
-      console.warn('Backend not available, using local storage fallback');
       const designId = Date.now().toString();
       localStorage.setItem(`badge-design-${designId}`, JSON.stringify(designData));
       return { id: designId, designData };
