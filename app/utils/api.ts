@@ -62,29 +62,21 @@ export const api = {
     } catch (error) {
       console.error('Error saving badge design:', error);
       
-      // Fallback to local storage
-      console.warn('Failed to save to backend, using local storage fallback');
+      // Fallback for server-side or when API fails
+      console.warn('Failed to save to backend, using fallback');
       const designId = Date.now().toString();
-      localStorage.setItem(`badge-design-${designId}`, JSON.stringify(designData));
       return { id: designId, designData };
     }
   },
 
-  // Get badge design by ID (with local storage fallback)
+  // Get badge design by ID (with fallback)
   async getBadgeDesign(id: string): Promise<BadgeDesignData> {
     try {
-      // Fallback to local storage for now
-      const localData = localStorage.getItem(`badge-design-${id}`);
-      if (localData) {
-        return { id, designData: JSON.parse(localData) };
-      }
-      throw new Error('Design not found');
+      // Try to get from Gadget API
+      const result = await gadgetClient.badgeDesign.findOne(id);
+      return { id, designData: result.designData };
     } catch (error) {
-      // Fallback to local storage
-      const localData = localStorage.getItem(`badge-design-${id}`);
-      if (localData) {
-        return { id, designData: JSON.parse(localData) };
-      }
+      // Fallback
       throw new Error('Design not found');
     }
   },
