@@ -154,11 +154,12 @@ export async function generateCartThumbnail(badge: Badge): Promise<string> {
   });
   
   try {
+    // Create a much smaller thumbnail for cart display
     const thumbnail = await generateBadgeThumbnail(badge, {
-      width: 150,
-      height: 50,
-      quality: 0.8,
-      format: 'image/png'
+      width: 80,  // Reduced from 150
+      height: 30, // Reduced from 50
+      quality: 0.6, // Reduced quality for smaller file size
+      format: 'image/jpeg' // Use JPEG instead of PNG for better compression
     });
     console.log('Cart thumbnail generated successfully');
     return thumbnail;
@@ -189,8 +190,8 @@ function generateFallbackThumbnail(badge: Badge): string {
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
   }
 
-  canvas.width = 150;
-  canvas.height = 50;
+  canvas.width = 80;  // Reduced from 150
+  canvas.height = 30; // Reduced from 50
 
   try {
     // Simple fallback design with proper background color
@@ -202,17 +203,17 @@ function generateFallbackThumbnail(badge: Badge): string {
     // Add border
     ctx.strokeStyle = '#888';
     ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, 150, 50);
+    ctx.strokeRect(0, 0, 80, 30);
 
     // Add text with contrasting color
     const textColor = backgroundColor === '#FFFFFF' || backgroundColor === '#F0E68C' ? '#000000' : '#FFFFFF';
     ctx.fillStyle = textColor;
-    ctx.font = '12px Arial';
+    ctx.font = '8px Arial'; // Smaller font
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Custom Badge', 75, 25);
+    ctx.fillText('Custom Badge', 40, 15); // Adjusted position
 
-    const dataUrl = canvas.toDataURL('image/png', 0.8);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Use JPEG with lower quality
     console.log('Fallback thumbnail generated successfully');
     return dataUrl;
   } catch (error) {

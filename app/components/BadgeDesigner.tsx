@@ -241,6 +241,12 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         textLines: badge.lines
       }, shopData);
 
+      // Log the save result
+      console.log('Badge design save result:', savedDesign);
+      if (savedDesign.fallback) {
+        console.warn('Badge design saved in fallback mode:', savedDesign.message);
+      }
+
       // Get the correct variant ID based on backing type
       const getVariantId = (backingType: string, productId?: string | null) => {
         console.log('Getting variant ID for backing type:', backingType, 'product ID:', productId);
@@ -264,6 +270,14 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       try {
         thumbnailImage = await generateCartThumbnail(badge);
         console.log('Thumbnail generated successfully:', thumbnailImage.substring(0, 50) + '...');
+        
+        // Update the badge design record with the thumbnail URL
+        if (savedDesign.id) {
+          await api.updateBadgeDesign(savedDesign.id, {
+            thumbnailUrl: thumbnailImage
+          });
+          console.log('Badge design updated with thumbnail URL');
+        }
       } catch (error) {
         console.error('Failed to generate thumbnail:', error);
         thumbnailImage = ''; // Fallback to empty string

@@ -11,6 +11,8 @@ export interface BadgeDesignData {
   designData: any;
   createdAt?: string;
   updatedAt?: string;
+  fallback?: boolean;
+  message?: string;
 }
 
 export interface ShopifyProduct {
@@ -68,10 +70,14 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
 
         const result = await response.json();
         
+        console.log('Save badge API response:', result);
+        
         return { 
           id: result.id ?? undefined, 
           designData,
-          designId: result.designId ?? undefined
+          designId: result.designId ?? undefined,
+          fallback: result.fallback || false,
+          message: result.message
         };
       } catch (error) {
         console.error('Error saving badge design:', error);
@@ -91,6 +97,38 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
     } catch (error) {
         // Fallback
       throw new Error('Design not found');
+    }
+  },
+
+  // Update badge design
+  async updateBadgeDesign(id: string, updateData: any): Promise<BadgeDesignData> {
+    try {
+      console.log('updateBadgeDesign called with:', { id, updateData });
+      
+      // Use server-side API route for updating
+      const response = await fetch('/api/update-badge', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, updateData }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      return { 
+        id: result.id ?? id, 
+        designData: result.designData ?? updateData,
+        designId: result.designId ?? undefined
+      };
+    } catch (error) {
+      console.error('Error updating badge design:', error);
+      throw error;
     }
   },
 
