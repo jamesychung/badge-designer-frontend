@@ -26,11 +26,19 @@ export async function generateBadgeThumbnail(
 
   return new Promise((resolve, reject) => {
     try {
+      console.log('Generating thumbnail for badge:', {
+        backgroundColor: badge.backgroundColor,
+        lines: badge.lines.length,
+        width,
+        height
+      });
+
       // Create canvas element
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
       if (!ctx) {
+        console.error('Could not get canvas context');
         reject(new Error('Could not get canvas context'));
         return;
       }
@@ -39,8 +47,10 @@ export async function generateBadgeThumbnail(
       canvas.width = width;
       canvas.height = height;
 
-      // Fill background
-      ctx.fillStyle = badge.backgroundColor;
+      // Fill background with fallback
+      const backgroundColor = badge.backgroundColor || '#FFFFFF';
+      console.log('Setting background color:', backgroundColor);
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
 
       // Add border
@@ -100,12 +110,34 @@ export async function generateBadgeThumbnail(
       });
 
       // Convert to data URL
-      const dataUrl = canvas.toDataURL(format, quality);
-      resolve(dataUrl);
+      try {
+        const dataUrl = canvas.toDataURL(format, quality);
+        console.log('Thumbnail generated successfully, data URL length:', dataUrl.length);
+        resolve(dataUrl);
+      } catch (toDataUrlError) {
+        console.error('Error converting canvas to data URL:', toDataUrlError);
+        // Try with lower quality
+        try {
+          const fallbackDataUrl = canvas.toDataURL('image/png', 0.5);
+          console.log('Fallback thumbnail generated with lower quality');
+          resolve(fallbackDataUrl);
+        } catch (fallbackError) {
+          console.error('Fallback thumbnail generation failed:', fallbackError);
+          reject(fallbackError);
+        }
+      }
 
     } catch (error) {
       console.error('Error generating badge thumbnail:', error);
-      reject(error);
+      // Return a basic fallback thumbnail instead of rejecting
+      try {
+        const fallbackThumbnail = generateFallbackThumbnail(badge);
+        console.log('Using fallback thumbnail due to error');
+        resolve(fallbackThumbnail);
+      } catch (fallbackError) {
+        console.error('Fallback thumbnail also failed:', fallbackError);
+        reject(error);
+      }
     }
   });
 }
@@ -116,17 +148,26 @@ export async function generateBadgeThumbnail(
  * @returns Promise<string> Base64 encoded image data URL
  */
 export async function generateCartThumbnail(badge: Badge): Promise<string> {
+  console.log('Generating cart thumbnail for badge:', {
+    backgroundColor: badge.backgroundColor,
+    lines: badge.lines.length
+  });
+  
   try {
-    return await generateBadgeThumbnail(badge, {
+    const thumbnail = await generateBadgeThumbnail(badge, {
       width: 150,
       height: 50,
       quality: 0.8,
       format: 'image/png'
     });
+    console.log('Cart thumbnail generated successfully');
+    return thumbnail;
   } catch (error) {
     console.error('Error generating cart thumbnail:', error);
     // Return a fallback thumbnail
-    return generateFallbackThumbnail(badge);
+    const fallback = generateFallbackThumbnail(badge);
+    console.log('Using fallback cart thumbnail');
+    return fallback;
   }
 }
 
@@ -136,29 +177,47 @@ export async function generateCartThumbnail(badge: Badge): Promise<string> {
  * @returns string Base64 encoded fallback image
  */
 function generateFallbackThumbnail(badge: Badge): string {
+  console.log('Generating fallback thumbnail for badge:', {
+    backgroundColor: badge.backgroundColor
+  });
+  
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   
   if (!ctx) {
+    console.error('Could not get canvas context for fallback thumbnail');
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
   }
 
   canvas.width = 150;
   canvas.height = 50;
 
-  // Simple fallback design
-  ctx.fillStyle = badge.backgroundColor || '#FFFFFF';
-  ctx.fillRect(0, 0, 150, 50);
-  
-  ctx.strokeStyle = '#888';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(0, 0, 150, 50);
+  try {
+    // Simple fallback design with proper background color
+    const backgroundColor = badge.backgroundColor || '#FFFFFF';
+    console.log('Fallback thumbnail background color:', backgroundColor);
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, 150, 50);
+    
+    // Add border
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, 150, 50);
 
-  ctx.fillStyle = '#000000';
-  ctx.font = '12px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('Custom Badge', 75, 25);
+    // Add text with contrasting color
+    const textColor = backgroundColor === '#FFFFFF' || backgroundColor === '#F0E68C' ? '#000000' : '#FFFFFF';
+    ctx.fillStyle = textColor;
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Custom Badge', 75, 25);
 
-  return canvas.toDataURL('image/png', 0.8);
+    const dataUrl = canvas.toDataURL('image/png', 0.8);
+    console.log('Fallback thumbnail generated successfully');
+    return dataUrl;
+  } catch (error) {
+    console.error('Error generating fallback thumbnail:', error);
+    // Return a minimal 1x1 transparent pixel as last resort
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  }
 } 
