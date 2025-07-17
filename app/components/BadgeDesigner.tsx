@@ -18,13 +18,16 @@ import { handleDownloadPDF } from '../utils/pdfGenerator';
 import { BadgeTextLinesHeader } from './BadgeTextLinesHeader';
 import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
-import { api } from '../utils/api';
+
 import { generateCartThumbnail } from '../utils/badgeThumbnail';
 import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
+import { createApi } from '../utils/api';
 
 interface BadgeDesignerProps {
   productId?: string | null;
   shop?: string | null;
+  gadgetApiUrl?: string;
+  gadgetApiKey?: string;
 }
 
 interface BadgeEditorPanelProps {
@@ -66,9 +69,11 @@ const badgeWidth = 300;
 const badgeHeight = 100;
 const MIN_FONT_SIZE = 8;
 
-const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop }) => {
+const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop, gadgetApiUrl, gadgetApiKey }) => {
   console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId);
   
+  // Create API instance with environment variables
+  const api = createApi(gadgetApiUrl, gadgetApiKey);
 
   
   const LINE_HEIGHT_MULTIPLIER = 1.3;

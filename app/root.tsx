@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -11,7 +12,10 @@ import { json } from "@remix-run/node";
 import "./tailwind.css";
 
 export const loader: LoaderFunction = async () => {
-  return json({}, {
+  return json({
+    GADGET_API_URL: process.env.GADGET_API_URL || 'https://allqualitybadges-development.gadget.app',
+    GADGET_API_KEY: process.env.GADGET_API_KEY,
+  }, {
     headers: {
       "X-Frame-Options": "ALLOWALL",
       "Content-Security-Policy": "frame-ancestors *",

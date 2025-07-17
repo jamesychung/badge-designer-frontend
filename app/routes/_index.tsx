@@ -21,15 +21,26 @@ export const loader: LoaderFunction = async ({ request }) => {
   headers.set("Content-Security-Policy", "frame-ancestors *");
   headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
   
-  return json({ productId, shop, timestamp: Date.now() }, { headers });
+  return json({ 
+    productId, 
+    shop, 
+    timestamp: Date.now(),
+    GADGET_API_URL: process.env.GADGET_API_URL || 'https://allqualitybadges-development.gadget.app',
+    GADGET_API_KEY: process.env.GADGET_API_KEY,
+  }, { headers });
 };
 
 export default function Index() {
-  const { productId, shop } = useLoaderData<typeof loader>();
+  const { productId, shop, GADGET_API_URL, GADGET_API_KEY } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <BadgeDesigner productId={productId} shop={shop} />
+      <BadgeDesigner 
+        productId={productId} 
+        shop={shop} 
+        gadgetApiUrl={GADGET_API_URL}
+        gadgetApiKey={GADGET_API_KEY}
+      />
     </div>
   );
 }
