@@ -311,6 +311,20 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       console.log('Thumbnail image length:', thumbnailImage.length);
       console.log('Thumbnail image preview:', thumbnailImage.substring(0, 100) + '...');
       
+      // Detailed logging of properties
+      console.log('=== DETAILED PROPERTIES LOG ===');
+      console.log('Properties object:', JSON.stringify(badgeData.properties, null, 2));
+      console.log('Custom Badge Design:', badgeData.properties['Custom Badge Design']);
+      console.log('Badge Text Line 1:', badgeData.properties['Badge Text Line 1']);
+      console.log('Badge Text Line 2:', badgeData.properties['Badge Text Line 2']);
+      console.log('Badge Text Line 3:', badgeData.properties['Badge Text Line 3']);
+      console.log('Badge Text Line 4:', badgeData.properties['Badge Text Line 4']);
+      console.log('Background Color:', badgeData.properties['Background Color']);
+      console.log('Backing Type:', badgeData.properties['Backing Type']);
+      console.log('Design ID:', badgeData.properties['Design ID']);
+      console.log('Custom Thumbnail exists:', !!badgeData.properties['Custom Thumbnail']);
+      console.log('=== END PROPERTIES LOG ===');
+      
       console.log('About to call api.addToCart with:', badgeData);
       const result = await api.addToCart(badgeData);
       console.log('api.addToCart result:', result);

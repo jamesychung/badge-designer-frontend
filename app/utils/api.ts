@@ -161,13 +161,16 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         form.appendChild(quantityInput);
         
         // Add properties
+        console.log('=== FORM SUBMISSION PROPERTIES ===');
         Object.entries(badgeData.properties).forEach(([key, value]) => {
           const propInput = document.createElement('input');
           propInput.type = 'hidden';
           propInput.name = `properties[${key}]`;
           propInput.value = value as string;
           form.appendChild(propInput);
+          console.log(`Adding property: properties[${key}] = ${value}`);
         });
+        console.log('=== END FORM SUBMISSION PROPERTIES ===');
         
         // Submit the form
         document.body.appendChild(form);
