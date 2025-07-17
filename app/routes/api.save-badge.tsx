@@ -44,6 +44,10 @@ export const action: ActionFunction = async ({ request }) => {
     // Prepare the payload for Gadget
     const badgeDesignData = designData.badge || designData;
     
+    console.log('Debug - designData:', designData);
+    console.log('Debug - badgeDesignData:', badgeDesignData);
+    console.log('Debug - badgeDesignData.lines:', badgeDesignData.lines);
+    
     const gadgetPayload = {
       shopId: shopData?.shopId || "75389960447",
       productId: designData.productId,
