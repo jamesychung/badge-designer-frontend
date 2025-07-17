@@ -235,6 +235,28 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
 
   const addToCart = async () => {
     try {
+      // First, save the badge design to Gadget
+      const shopData = getCurrentShop(_shop);
+      if (!shopData) {
+        alert('Shop information not found. Please reload the page.');
+        return;
+      }
+
+      // Save the badge design first
+      const savedDesign = await api.saveBadgeDesign({
+        badge,
+        productId: _productId,
+        shopId: shopData.shopId,
+        designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        status: 'saved',
+        backgroundColor: badge.backgroundColor,
+        backingType: badge.backing,
+        basePrice: 9.99,
+        backingPrice: 0,
+        totalPrice: totalPrice,
+        textLines: badge.lines
+      }, shopData);
+
       // Get the correct variant ID based on backing type
       const getVariantId = (backingType: string) => {
         switch (backingType) {
@@ -251,13 +273,6 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
 
       // Generate thumbnail image of the badge design
       const thumbnailImage = await generateCartThumbnail(badge);
-
-      // Get current shop data
-      const shopData = getCurrentShop(_shop);
-      if (!shopData) {
-        alert('Shop information not found. Please reload the page.');
-        return;
-      }
       
       const badgeData = {
         variantId: getVariantId(badge.backing),
@@ -270,7 +285,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         backgroundColor: badge.backgroundColor,
         fontFamily: badge.lines[0]?.fontFamily || 'Arial',
         backing: badge.backing,
-        designId: Date.now().toString(),
+        designId: savedDesign.designId, // Use the saved design ID from Gadget
+        gadgetDesignId: savedDesign.id, // Add the Gadget record ID
         fullDesignData: badge,
         price: totalPrice,
         thumbnailImage: thumbnailImage // Add the generated thumbnail
