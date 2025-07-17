@@ -272,7 +272,14 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       };
 
       // Generate thumbnail image of the badge design
-      const thumbnailImage = await generateCartThumbnail(badge);
+      let thumbnailImage = '';
+      try {
+        thumbnailImage = await generateCartThumbnail(badge);
+        console.log('Thumbnail generated successfully:', thumbnailImage.substring(0, 50) + '...');
+      } catch (error) {
+        console.error('Failed to generate thumbnail:', error);
+        thumbnailImage = ''; // Fallback to empty string
+      }
       
       const badgeData = {
         variantId: getVariantId(badge.backing),
@@ -295,7 +302,13 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         }
       };
       
-      await api.addToCart(badgeData);
+      console.log('Badge data being sent to cart:', badgeData);
+      console.log('Badge lines:', badge.lines);
+      console.log('Thumbnail image:', thumbnailImage);
+      
+      console.log('About to call api.addToCart with:', badgeData);
+      const result = await api.addToCart(badgeData);
+      console.log('api.addToCart result:', result);
       alert(`Badge added to cart! Price: $${totalPrice}`);
       
     } catch (error) {

@@ -115,10 +115,43 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
 
     // Add to cart functionality
     async addToCart(badgeData: any) {
-      this.sendToParent({
-        action: 'add-to-cart',
-        payload: badgeData
-      });
+      console.log('addToCart function called with:', badgeData);
+      try {
+        console.log('Making fetch request to /api/add-to-cart');
+        // First, try to add via server-side API
+        const response = await fetch('/api/add-to-cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ badgeData }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Add to cart result:', result);
+
+        // Also send to parent window for Shopify integration
+        this.sendToParent({
+          action: 'add-to-cart',
+          payload: badgeData
+        });
+
+        return result;
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        
+        // Fallback to just sending to parent window
+        this.sendToParent({
+          action: 'add-to-cart',
+          payload: badgeData
+        });
+        
+        throw error;
+      }
     },
 
     // Close modal
