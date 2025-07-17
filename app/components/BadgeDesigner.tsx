@@ -18,7 +18,8 @@ import { handleDownloadPDF } from '../utils/pdfGenerator';
 import { BadgeTextLinesHeader } from './BadgeTextLinesHeader';
 import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
-
+import { BACKGROUND_COLORS, FONT_COLORS } from '../constants/colors';
+import { BADGE_CONSTANTS } from '../constants/badge';
 import { generateCartThumbnail } from '../utils/badgeThumbnail';
 import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
 import { createApi } from '../utils/api';
@@ -44,30 +45,13 @@ interface BadgeEditorPanelProps {
   editable?: boolean;
 }
 
-const backgroundColors = [
-  { name: 'Black', value: '#000000', ring: 'ring-gray-600' },
-  { name: 'White', value: '#FFFFFF', ring: 'ring-gray-300' },
-  { name: 'Red', value: '#ea0c0c', ring: 'ring-red-600' },
-  { name: 'Blue', value: '#0c5cea', ring: 'ring-blue-700' },
-  { name: 'Silver', value: '#C0C0C0', ring: 'ring-gray-400' },
-  { name: 'Gold', value: '#eac10c', ring: 'ring-yellow-400' },
-  { name: 'Brown', value: '#6E260E', ring: 'ring-yellow-900' },
-  { name: 'Ivory', value: '#F0E68C', ring: 'ring-yellow-200' },
-];
-const fontColors = [
-  { name: 'Black', value: '#000000', ring: 'ring-gray-400' },
-  { name: 'White', value: '#FFFFFF', ring: 'ring-gray-300' },
-  { name: 'Red', value: '#ea0c0c', ring: 'ring-red-600' },
-  { name: 'Yellow', value: '#FFFF00', ring: 'ring-yellow-400' },
-  { name: 'Gold', value: '#eac10c', ring: 'ring-yellow-400' },
-  { name: 'Silver', value: '#C0C0C0', ring: 'ring-gray-400' },
-  { name: 'Blue', value: '#0c5cea', ring: 'ring-blue-700' },
-];
+const backgroundColors = BACKGROUND_COLORS;
+const fontColors = FONT_COLORS;
 const fontOptions = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
-const maxLines = 4;
-const badgeWidth = 300;
-const badgeHeight = 100;
-const MIN_FONT_SIZE = 8;
+const maxLines = BADGE_CONSTANTS.MAX_LINES;
+const badgeWidth = BADGE_CONSTANTS.BADGE_WIDTH;
+const badgeHeight = BADGE_CONSTANTS.BADGE_HEIGHT;
+const MIN_FONT_SIZE = BADGE_CONSTANTS.MIN_FONT_SIZE;
 
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop, gadgetApiUrl, gadgetApiKey }) => {
   console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId, 'type:', typeof _productId);
@@ -176,7 +160,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       lines: [
         { text: 'Your Name', size: 18, color: '#000000', bold: false, italic: false, underline: false, fontFamily: 'Arial', alignment: 'center' } as BadgeLine,
         { text: 'Title', size: 13, color: '#000000', bold: false, italic: false, underline: false, fontFamily: 'Arial', alignment: 'center' } as BadgeLine,
-      ] as BadgeLine[],
+      ],
       backgroundColor: '#FFFFFF',
       backing: 'pin',
     });

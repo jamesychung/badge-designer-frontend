@@ -1,4 +1,5 @@
 export const BACKGROUND_COLORS = [
+  { value: '#000000', name: 'Black', ring: 'ring-gray-600' },
   { value: '#FFFFFF', name: 'White', ring: 'ring-white' },
   { value: '#F0E68C', name: 'Ivory', ring: 'ring-yellow-200' },
   { value: '#FFFF00', name: 'Yellow', ring: 'ring-yellow-300' },
