@@ -257,38 +257,12 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         textLines: badge.lines
       }, shopData);
 
-      // Get the correct variant ID based on backing type and product
+      // Get the correct variant ID based on backing type
       const getVariantId = (backingType: string, productId?: string | null) => {
-        console.log('Getting variant ID for product:', productId, 'backing type:', backingType);
+        console.log('Getting variant ID for backing type:', backingType, 'product ID:', productId);
         
-        // If we have a specific product ID, we need to get the correct variant ID
-        // for that product and backing type
-        if (productId) {
-          // For now, we'll construct the variant ID based on the product ID and backing type
-          // This assumes your variant IDs follow a pattern like: productId + backingType
-          const baseProductId = productId;
-          let variantId;
-          
-          switch (backingType) {
-            case 'pin':
-              variantId = baseProductId; // Pin is usually the default variant
-              break;
-            case 'magnetic':
-              variantId = `${baseProductId}-magnetic`;
-              break;
-            case 'adhesive':
-              variantId = `${baseProductId}-adhesive`;
-              break;
-            default:
-              variantId = baseProductId;
-          }
-          
-          console.log('Generated variant ID:', variantId);
-          return variantId;
-        }
-        
-        // Fallback to hardcoded variant IDs if no product ID
-        console.log('Using fallback variant IDs');
+        // Always use the correct numeric Shopify variant IDs
+        // These are the actual variant IDs from your Shopify admin
         switch (backingType) {
           case 'pin':
             return '47037830299903'; // Pin variant ID
