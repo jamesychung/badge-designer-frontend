@@ -59,8 +59,12 @@ export const action: ActionFunction = async ({ request }) => {
       basePrice: 9.99,
       backingPrice: 0,
       totalPrice: 9.99,
-      textLines: JSON.stringify(badgeDesignData.lines || []),
+      textLines: JSON.stringify(designData.textLines || []),
     };
+
+    console.log('Debug - gadgetPayload.textLines:', gadgetPayload.textLines);
+    console.log('Debug - gadgetPayload.textLines type:', typeof gadgetPayload.textLines);
+    console.log('Debug - Full gadgetPayload:', JSON.stringify(gadgetPayload, null, 2));
 
     console.log('Attempting to create badge design with payload:', gadgetPayload);
 
