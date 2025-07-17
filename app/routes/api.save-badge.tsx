@@ -43,17 +43,17 @@ export const action: ActionFunction = async ({ request }) => {
 
     // Prepare the payload for Gadget
     const gadgetPayload = {
-      shopId: shopData?.shopId || "75389960447", // Use the real shopId from badgesonly.myshopify.com
+      shopId: shopData?.shopId ||75389960447, // Use the real shopId from badgesonly.myshopify.com
       productId: designData.productId,
       designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       status: "saved" as const,
-      designData: designData.badge || designData,
+      designData: JSON.stringify(designData.badge || designData), // Convert to JSON string
       backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
       backingType: designData.badge?.backing || "pin",
       basePrice: 9.99,
       backingPrice: 0,
       totalPrice: 9.99,
-      textLines: designData.badge?.lines || [],
+      textLines: JSON.stringify(designData.badge?.lines || []), // Convert to JSON string
     };
 
     console.log('Attempting to create badge design with payload:', gadgetPayload);
@@ -62,6 +62,9 @@ export const action: ActionFunction = async ({ request }) => {
     const result = await gadgetClient.badgeDesign.create(gadgetPayload);
 
     console.log('Badge design creation result:', result);
+    console.log('Full result object keys:', Object.keys(result));
+    console.log('Result designData field:', result.designData);
+    console.log('Result textLines field:', result.textLines);
 
     // The Gadget client returns the badge design record directly
     return json({
