@@ -11,7 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@gadget-client/allqualitybadges": "file:../badge-designer/.gadget/client",
+    "@gadget-client/allqualitybadges": "file:gadget-client",
     "@gadgetinc/react": "^0.21.3",
     "@heroicons/react": "^2.2.0",
     "@remix-run/node": "2.16.7",

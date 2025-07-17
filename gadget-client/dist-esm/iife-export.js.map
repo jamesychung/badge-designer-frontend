@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/iife-export.ts"],
+  "sourcesContent": ["import { AllqualitybadgesClient } from \".\";\n\ndeclare global {\n  interface Window {\n    /**\n     * The Gadget client constructor\n     *\n     * @example\n     * ```ts\n     * const api = new AllqualitybadgesClient();\n     * ```\n     */\n    AllqualitybadgesClient: typeof AllqualitybadgesClient;\n\n    /**\n     * The Gadget client for AllqualitybadgesClient\n     * @deprecated Use window.AllqualitybadgesClient instead\n     */\n    Gadget: typeof AllqualitybadgesClient;\n  }\n}\n\n// add the client to the window\nwindow.AllqualitybadgesClient = AllqualitybadgesClient;\n\nconst previousValue: any = window.Gadget;\n\n// add the client to the window at the old .Gadget property for backwards compatibility -- the AllqualitybadgesClient property should be preferred instead\nwindow.Gadget = AllqualitybadgesClient;\n(window.Gadget as any).previousValue = previousValue;\n"],
+  "mappings": "AAAA,SAAS,8BAA8B;AAuBvC,OAAO,yBAAyB;AAEhC,MAAM,gBAAqB,OAAO;AAGlC,OAAO,SAAS;AACf,OAAO,OAAe,gBAAgB;",
+  "names": []
+}
