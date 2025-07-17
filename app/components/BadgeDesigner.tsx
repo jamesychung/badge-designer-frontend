@@ -75,6 +75,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
   const [csvError, setCsvError] = useState('');
   const [multipleBadges, setMultipleBadges] = useState<any[]>([]);
   const [editModalIndex, setEditModalIndex] = useState<number | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Helper to estimate text width for a given font size and string
   const measureTextWidth = (text: string, fontSize: number, fontFamily: string, bold: boolean, italic: boolean) => {
@@ -218,6 +219,14 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
   };
 
   const addToCart = async () => {
+    // Prevent multiple simultaneous requests
+    if (isAddingToCart) {
+      console.log('Cart addition already in progress, ignoring request');
+      return;
+    }
+
+    setIsAddingToCart(true);
+    
     try {
       // First, save the badge design to Gadget
       const shopData = getCurrentShop(_shop);
@@ -338,16 +347,9 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       
       // Handle successful cart addition
       if (result.success) {
-        // Get Shopify store URL from environment or use default
-        // In frontend, we'll use a default or get from window object if available
-        const shopifyStoreUrl = (typeof window !== 'undefined' && (window as any).SHOPIFY_STORE_URL) || 'badgesonly.myshopify.com';
-        
-        // Add a small delay to allow console logs to be captured
-        setTimeout(() => {
-          alert(`Badge added to cart! Price: $${totalPrice}\n\nRedirecting to your cart...`);
-          // Redirect to Shopify cart
-          window.location.href = `https://${shopifyStoreUrl}/cart`;
-        }, 100);
+        console.log('Cart addition successful, redirecting...');
+        // The redirect is handled by the API function
+        // No need to show alert or redirect again
       } else {
         alert('Failed to add badge to cart. Please try again.');
       }
@@ -355,6 +357,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
     } catch (error) {
       console.error('Failed to add to cart:', error);
       alert('Failed to add badge to cart. Please try again.');
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -745,10 +749,20 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
               Save Design
             </button>
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); addToCart(); }}
+              className={`px-4 py-2 rounded shadow ${
+                isAddingToCart 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              } text-white`}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => { 
+                e.preventDefault(); 
+                if (!isAddingToCart) {
+                  addToCart(); 
+                }
+              }}
+              disabled={isAddingToCart}
             >
-              Add to Cart - ${totalPrice}
+              {isAddingToCart ? 'Adding to Cart...' : `Add to Cart - $${totalPrice}`}
             </button>
           </div>
         </div>

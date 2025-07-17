@@ -175,53 +175,22 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
 
         console.log('Cart data to send to Shopify:', cartData);
 
-        // Add to Shopify cart using form submission to avoid CORS
-        console.log('Using form submission to avoid CORS...');
+        // Use a more reliable approach - redirect to cart/add with query parameters
+        // This avoids CORS issues and doesn't open new tabs
+        const params = new URLSearchParams();
+        params.append('id', badgeData.variantId);
+        params.append('quantity', badgeData.quantity.toString());
         
-        // Create a form and submit it to add to cart
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `https://${shopifyStoreUrl}/cart/add`;
-        form.target = '_blank'; // Open in new tab/window
-        
-        // Add variant ID
-        const variantInput = document.createElement('input');
-        variantInput.type = 'hidden';
-        variantInput.name = 'id';
-        variantInput.value = badgeData.variantId;
-        form.appendChild(variantInput);
-        
-        // Add quantity
-        const quantityInput = document.createElement('input');
-        quantityInput.type = 'hidden';
-        quantityInput.name = 'quantity';
-        quantityInput.value = badgeData.quantity.toString();
-        form.appendChild(quantityInput);
-        
-        // Add properties
-        console.log('=== FORM SUBMISSION PROPERTIES ===');
+        // Add properties as query parameters
         Object.entries(badgeData.properties).forEach(([key, value]) => {
-          const propInput = document.createElement('input');
-          propInput.type = 'hidden';
-          propInput.name = `properties[${key}]`;
-          propInput.value = value as string;
-          form.appendChild(propInput);
-          console.log(`Adding property: properties[${key}] = ${value}`);
+          params.append(`properties[${key}]`, value as string);
         });
-        console.log('=== END FORM SUBMISSION PROPERTIES ===');
+
+        const cartUrl = `https://${shopifyStoreUrl}/cart/add?${params.toString()}`;
+        console.log('Redirecting to cart URL:', cartUrl);
         
-        // Submit the form
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-        
-        console.log('Form submitted to add item to cart');
-        
-        // Simulate success response since we can't get the actual response due to CORS
-        const cartResult = {
-          success: true,
-          message: 'Item added to cart via form submission'
-        };
+        // Redirect to the cart addition URL
+        window.location.href = cartUrl;
 
         // Also send to parent window for additional integration
         this.sendToParent({
@@ -231,8 +200,8 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
 
         return { 
           success: true, 
-          message: 'Badge added to cart successfully',
-          cartData: cartResult,
+          message: 'Redirecting to add item to cart',
+          cartData: { redirectUrl: cartUrl },
           badgeData 
         };
 
