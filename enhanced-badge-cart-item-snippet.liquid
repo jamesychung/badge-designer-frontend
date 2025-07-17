@@ -1,0 +1,67 @@
+{% comment %}
+  Enhanced Badge Cart Item Snippet
+  Include this snippet in your cart template to display custom badge designs
+  Usage: {% render 'badge-cart-item', item: cart_item %}
+  
+  This enhanced version includes better styling and color swatches
+{% endcomment %}
+
+{% if item.properties['Custom Badge Design'] == 'Yes' %}
+  <div class="badge-design-details" style="margin-top: 8px; padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 4px solid #007cba; font-size: 0.9em;">
+    <p style="margin: 0 0 8px 0; font-weight: 600; color: #333; font-size: 1em;">
+      <strong>Custom Badge Design:</strong>
+    </p>
+    
+    {% comment %} Display badge text lines with enhanced styling {% endcomment %}
+    {% if item.properties['Badge Text Line 1'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Line 1:</strong> 
+        <span class="badge-text-line" style="background: #fff; padding: 2px 6px; border-radius: 3px; border: 1px solid #e0e0e0; margin: 1px 0; display: inline-block;">{{ item.properties['Badge Text Line 1'] }}</span>
+      </p>
+    {% endif %}
+    {% if item.properties['Badge Text Line 2'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Line 2:</strong> 
+        <span class="badge-text-line" style="background: #fff; padding: 2px 6px; border-radius: 3px; border: 1px solid #e0e0e0; margin: 1px 0; display: inline-block;">{{ item.properties['Badge Text Line 2'] }}</span>
+      </p>
+    {% endif %}
+    {% if item.properties['Badge Text Line 3'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Line 3:</strong> 
+        <span class="badge-text-line" style="background: #fff; padding: 2px 6px; border-radius: 3px; border: 1px solid #e0e0e0; margin: 1px 0; display: inline-block;">{{ item.properties['Badge Text Line 3'] }}</span>
+      </p>
+    {% endif %}
+    {% if item.properties['Badge Text Line 4'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Line 4:</strong> 
+        <span class="badge-text-line" style="background: #fff; padding: 2px 6px; border-radius: 3px; border: 1px solid #e0e0e0; margin: 1px 0; display: inline-block;">{{ item.properties['Badge Text Line 4'] }}</span>
+      </p>
+    {% endif %}
+    
+    {% comment %} Display design options with color swatches {% endcomment %}
+    {% if item.properties['Background Color'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Background:</strong> 
+        <span style="display: inline-block; width: 16px; height: 12px; background: {{ item.properties['Background Color'] }}; border: 1px solid #ccc; margin-left: 4px; vertical-align: middle;"></span>
+        {{ item.properties['Background Color'] }}
+      </p>
+    {% endif %}
+    {% if item.properties['Backing Type'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Backing:</strong> {{ item.properties['Backing Type'] | capitalize }}
+      </p>
+    {% endif %}
+    {% if item.properties['Font Family'] != blank %}
+      <p style="margin: 3px 0;">
+        <strong>Font:</strong> {{ item.properties['Font Family'] }}
+      </p>
+    {% endif %}
+    
+    {% comment %} Display design ID if available {% endcomment %}
+    {% if item.properties['Design ID'] != blank %}
+      <p style="margin: 6px 0 0 0; font-size: 0.8em; color: #666;">
+        <strong>Design ID:</strong> {{ item.properties['Design ID'] }}
+      </p>
+    {% endif %}
+  </div>
+{% endif %} 

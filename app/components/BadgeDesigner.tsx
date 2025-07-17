@@ -70,7 +70,7 @@ const badgeHeight = 100;
 const MIN_FONT_SIZE = 8;
 
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop, gadgetApiUrl, gadgetApiKey }) => {
-  console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId);
+  console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId, 'type:', typeof _productId);
   
   // Create API instance with environment variables
   const api = createApi(gadgetApiUrl, gadgetApiKey);
@@ -198,8 +198,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         status: "saved",
         designData: {
-          badge,
-          timestamp: new Date().toISOString(),
+        badge,
+        timestamp: new Date().toISOString(),
         },
         backgroundColor: badge.backgroundColor,
         backingType: badge.backing,
@@ -257,8 +257,38 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         textLines: badge.lines
       }, shopData);
 
-      // Get the correct variant ID based on backing type
-      const getVariantId = (backingType: string) => {
+      // Get the correct variant ID based on backing type and product
+      const getVariantId = (backingType: string, productId?: string | null) => {
+        console.log('Getting variant ID for product:', productId, 'backing type:', backingType);
+        
+        // If we have a specific product ID, we need to get the correct variant ID
+        // for that product and backing type
+        if (productId) {
+          // For now, we'll construct the variant ID based on the product ID and backing type
+          // This assumes your variant IDs follow a pattern like: productId + backingType
+          const baseProductId = productId;
+          let variantId;
+          
+          switch (backingType) {
+            case 'pin':
+              variantId = baseProductId; // Pin is usually the default variant
+              break;
+            case 'magnetic':
+              variantId = `${baseProductId}-magnetic`;
+              break;
+            case 'adhesive':
+              variantId = `${baseProductId}-adhesive`;
+              break;
+            default:
+              variantId = baseProductId;
+          }
+          
+          console.log('Generated variant ID:', variantId);
+          return variantId;
+        }
+        
+        // Fallback to hardcoded variant IDs if no product ID
+        console.log('Using fallback variant IDs');
         switch (backingType) {
           case 'pin':
             return '47037830299903'; // Pin variant ID
@@ -282,7 +312,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       }
       
       const badgeData = {
-        variantId: getVariantId(badge.backing),
+        variantId: getVariantId(badge.backing, _productId),
         quantity: 1,
         properties: {
           'Custom Badge Design': 'Yes',
@@ -304,12 +334,17 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       
       console.log('Badge data being sent to cart:', badgeData);
       console.log('Badge lines:', badge.lines);
-      console.log('Thumbnail image:', thumbnailImage);
+      console.log('Thumbnail image length:', thumbnailImage.length);
+      console.log('Thumbnail image preview:', thumbnailImage.substring(0, 100) + '...');
       
       console.log('About to call api.addToCart with:', badgeData);
       const result = await api.addToCart(badgeData);
       console.log('api.addToCart result:', result);
-      alert(`Badge added to cart! Price: $${totalPrice}`);
+      
+      // Add a small delay before redirect to allow console logs to be captured
+      setTimeout(() => {
+        alert(`Badge added to cart! Price: $${totalPrice}`);
+      }, 100);
       
     } catch (error) {
       console.error('Failed to add to cart:', error);

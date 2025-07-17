@@ -54,14 +54,14 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         
         // Use server-side API route instead of client-side Gadget client
         const response = await fetch('/api/save-badge', {
-          method: 'POST',
+        method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ designData, shopData }),
-        });
-
-        if (!response.ok) {
+      });
+      
+      if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || `HTTP ${response.status}`);
         }
@@ -79,23 +79,23 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         // Fallback for server-side or when API fails
         console.warn('Failed to save to backend, using fallback');
         const designId = Date.now().toString();
-        return { id: designId, designData };
-      }
-    },
+      return { id: designId, designData };
+    }
+  },
 
     // Get badge design by ID (with fallback)
-    async getBadgeDesign(id: string): Promise<BadgeDesignData> {
-      try {
+  async getBadgeDesign(id: string): Promise<BadgeDesignData> {
+    try {
         // For now, just return a fallback since we don't have a get endpoint yet
         throw new Error('Design not found');
-      } catch (error) {
+    } catch (error) {
         // Fallback
-        throw new Error('Design not found');
-      }
-    },
+      throw new Error('Design not found');
+    }
+  },
 
-    // Get product info from Shopify (mock data for now)
-    async getProductInfo(productId: string): Promise<ShopifyProduct> {
+  // Get product info from Shopify (mock data for now)
+  async getProductInfo(productId: string): Promise<ShopifyProduct> {
       // Return mock data as fallback
       return {
         id: productId,
@@ -104,17 +104,17 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
           { id: '1', title: 'Default', price: '10.00' }
         ]
       };
-    },
+  },
 
-    // Send message to parent window (for Shopify integration)
-    sendToParent(message: any) {
-      if (typeof window !== 'undefined' && window.parent) {
-        window.parent.postMessage(message, '*');
-      }
-    },
+  // Send message to parent window (for Shopify integration)
+  sendToParent(message: any) {
+    if (typeof window !== 'undefined' && window.parent) {
+      window.parent.postMessage(message, '*');
+    }
+  },
 
-    // Add to cart functionality
-    async addToCart(badgeData: any) {
+  // Add to cart functionality
+  async addToCart(badgeData: any) {
       console.log('addToCart function called with:', badgeData);
       try {
         console.log('Making fetch request to /api/add-to-cart');
@@ -134,7 +134,7 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         const result = await response.json();
         console.log('Add to cart result:', result);
 
-        // Also send to parent window for Shopify integration
+        // Send to parent window for Shopify integration
         this.sendToParent({
           action: 'add-to-cart',
           payload: badgeData
@@ -145,20 +145,20 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         console.error('Error adding to cart:', error);
         
         // Fallback to just sending to parent window
-        this.sendToParent({
-          action: 'add-to-cart',
-          payload: badgeData
-        });
+    this.sendToParent({
+      action: 'add-to-cart',
+      payload: badgeData
+    });
         
         throw error;
       }
-    },
+  },
 
-    // Close modal
-    closeModal() {
-      this.sendToParent({
-        action: 'close-modal'
-      });
-    }
-  };
+  // Close modal
+  closeModal() {
+    this.sendToParent({
+      action: 'close-modal'
+    });
+  }
+}; 
 } 

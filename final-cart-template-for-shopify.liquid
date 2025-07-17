@@ -17,6 +17,43 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  /* Custom Badge Design Styles */
+  .badge-design-details {
+    margin-top: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #007cba;
+    font-size: 0.9em;
+  }
+
+  .badge-design-details p {
+    margin: 2px 0;
+    line-height: 1.4;
+  }
+
+  .badge-design-details strong {
+    color: #333;
+    font-weight: 600;
+  }
+
+  .custom-badge-thumbnail {
+    max-width: 100px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .badge-text-line {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+    margin: 1px 0;
+    display: inline-block;
+  }
 {%- endstyle -%}
 
 {%- unless settings.cart_type == 'drawer' -%}
@@ -87,14 +124,14 @@
                         <div class="cart-item__image-container gradient global-media-settings">
                           {%- comment -%} Check for custom badge thumbnail {%- endcomment -%}
                           {%- assign custom_thumb = item.properties._custom_thumbnail | default: item.properties['Custom Thumbnail'] -%}
-                          {% if custom_thumb %}
+                          {% if custom_thumb and custom_thumb != blank %}
                             <img
                               src="{{ custom_thumb }}"
-                              class="cart-item__image"
+                              class="cart-item__image custom-badge-thumbnail"
                               alt="Custom Badge Design"
                               loading="lazy"
                               width="150"
-                              style="max-width: 100px; height: auto; border: 1px solid #ddd; border-radius: 4px;"
+                              style="max-width: 100px; height: auto;"
                             >
                           {% else %}
                             <img
@@ -140,25 +177,61 @@
 
                       {%- comment -%} Display badge design details if it's a custom badge {%- endcomment -%}
                       {%- if item.properties['Custom Badge Design'] == 'Yes' -%}
-                        <div class="badge-design-details" style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 0.9em;">
-                          <p style="margin: 0 0 4px 0;"><strong>Custom Badge Design:</strong></p>
-                          {%- if item.properties['Badge Text Line 1'] -%}
-                            <p style="margin: 2px 0;">Line 1: {{ item.properties['Badge Text Line 1'] }}</p>
+                        <div class="badge-design-details">
+                          <p style="margin: 0 0 8px 0; font-weight: 600; color: #333; font-size: 1em;">
+                            <strong>Custom Badge Design:</strong>
+                          </p>
+                          
+                          {%- comment -%} Display badge text lines {%- endcomment -%}
+                          {%- if item.properties['Badge Text Line 1'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Line 1:</strong> 
+                              <span class="badge-text-line">{{ item.properties['Badge Text Line 1'] }}</span>
+                            </p>
                           {%- endif -%}
-                          {%- if item.properties['Badge Text Line 2'] -%}
-                            <p style="margin: 2px 0;">Line 2: {{ item.properties['Badge Text Line 2'] }}</p>
+                          {%- if item.properties['Badge Text Line 2'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Line 2:</strong> 
+                              <span class="badge-text-line">{{ item.properties['Badge Text Line 2'] }}</span>
+                            </p>
                           {%- endif -%}
-                          {%- if item.properties['Badge Text Line 3'] -%}
-                            <p style="margin: 2px 0;">Line 3: {{ item.properties['Badge Text Line 3'] }}</p>
+                          {%- if item.properties['Badge Text Line 3'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Line 3:</strong> 
+                              <span class="badge-text-line">{{ item.properties['Badge Text Line 3'] }}</span>
+                            </p>
                           {%- endif -%}
-                          {%- if item.properties['Badge Text Line 4'] -%}
-                            <p style="margin: 2px 0;">Line 4: {{ item.properties['Badge Text Line 4'] }}</p>
+                          {%- if item.properties['Badge Text Line 4'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Line 4:</strong> 
+                              <span class="badge-text-line">{{ item.properties['Badge Text Line 4'] }}</span>
+                            </p>
                           {%- endif -%}
-                          {%- if item.properties['Background Color'] -%}
-                            <p style="margin: 2px 0;">Background: {{ item.properties['Background Color'] }}</p>
+                          
+                          {%- comment -%} Display design options {%- endcomment -%}
+                          {%- if item.properties['Background Color'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Background:</strong> 
+                              <span style="display: inline-block; width: 16px; height: 12px; background: {{ item.properties['Background Color'] }}; border: 1px solid #ccc; margin-left: 4px; vertical-align: middle;"></span>
+                              {{ item.properties['Background Color'] }}
+                            </p>
                           {%- endif -%}
-                          {%- if item.properties['Backing Type'] -%}
-                            <p style="margin: 2px 0;">Backing: {{ item.properties['Backing Type'] | capitalize }}</p>
+                          {%- if item.properties['Backing Type'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Backing:</strong> {{ item.properties['Backing Type'] | capitalize }}
+                            </p>
+                          {%- endif -%}
+                          {%- if item.properties['Font Family'] != blank -%}
+                            <p style="margin: 3px 0;">
+                              <strong>Font:</strong> {{ item.properties['Font Family'] }}
+                            </p>
+                          {%- endif -%}
+                          
+                          {%- comment -%} Display design ID if available {%- endcomment -%}
+                          {%- if item.properties['Design ID'] != blank -%}
+                            <p style="margin: 6px 0 0 0; font-size: 0.8em; color: #666;">
+                              <strong>Design ID:</strong> {{ item.properties['Design ID'] }}
+                            </p>
                           {%- endif -%}
                         </div>
                       {%- endif -%}
@@ -400,35 +473,8 @@
                                 {{- 'icon-close.svg' | inline_asset_content -}}
                               </span>
                             </button>
-                            {%- if item.variant.quantity_price_breaks.size > 0 -%}
-                              <volume-pricing class="parent-display">
-                                <ul class="list-unstyled">
-                                  <li>
-                                    <span>{{ item.variant.quantity_rule.min }}+</span>
-                                    {%- assign price = item.variant.price | money_with_currency -%}
-                                    <span> {{ 'sections.quick_order_list.each' | t: money: price }}</span>
-                                  </li>
-                                  {%- for price_break in item.variant.quantity_price_breaks -%}
-                                    <li>
-                                      <span>
-                                        {{- price_break.minimum_quantity -}}
-                                        <span aria-hidden="true">+</span></span
-                                      >
-                                      {%- assign price = price_break.price | money_with_currency -%}
-                                      <span> {{ 'sections.quick_order_list.each' | t: money: price }}</span>
-                                    </li>
-                                  {%- endfor -%}
-                                </ul>
-                              </volume-pricing>
-                            {%- endif -%}
                           </div>
                         {%- endif -%}
-                        <div class="cart-item__error" id="Line-item-error-{{ item.index | plus: 1 }}" role="alert">
-                          <small class="cart-item__error-text"></small>
-                          <span class="svg-wrapper">
-                            {{- 'icon-error.svg' | inline_asset_content -}}
-                          </span>
-                        </div>
                       </quantity-popover>
                     </td>
 
@@ -483,15 +529,6 @@
       </div>
 
       <p class="visually-hidden" id="cart-live-region-text" aria-live="polite" role="status"></p>
-      <p
-        class="visually-hidden"
-        id="shopping-cart-line-item-status"
-        aria-live="polite"
-        aria-hidden="true"
-        role="status"
-      >
-        {{ 'accessibility.loading' | t }}
-      </p>
     </form>
   </div>
 </cart-items>
@@ -500,12 +537,6 @@
 {
   "name": "t:sections.main-cart-items.name",
   "settings": [
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
-    },
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"
