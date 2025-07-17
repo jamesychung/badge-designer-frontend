@@ -143,7 +143,90 @@ export async function generateBadgeThumbnail(
 }
 
 /**
- * Generates a smaller thumbnail suitable for cart display
+ * Generates a full-size badge image (actual badge dimensions)
+ * @param badge The badge design data
+ * @returns Promise<string> Base64 encoded image data URL
+ */
+export async function generateFullBadgeImage(badge: Badge): Promise<string> {
+  console.log('Generating full badge image for badge:', {
+    backgroundColor: badge.backgroundColor,
+    lines: badge.lines.length
+  });
+  
+  try {
+    // Generate full-size image (1" x 3" at 300 DPI = 300x900 pixels)
+    const fullImage = await generateBadgeThumbnail(badge, {
+      width: 300,  // 1 inch at 300 DPI
+      height: 900, // 3 inches at 300 DPI
+      quality: 0.9, // High quality for full image
+      format: 'image/png' // PNG for best quality
+    });
+    console.log('Full badge image generated successfully');
+    return fullImage;
+  } catch (error) {
+    console.error('Error generating full badge image:', error);
+    // Return a fallback image
+    const fallback = generateFallbackFullImage(badge);
+    console.log('Using fallback full badge image');
+    return fallback;
+  }
+}
+
+/**
+ * Generates a thumbnail from the full image (proportional scaling)
+ * @param fullImageDataUrl The full-size image data URL
+ * @param targetWidth The target thumbnail width
+ * @param targetHeight The target thumbnail height
+ * @returns Promise<string> Base64 encoded thumbnail data URL
+ */
+export async function generateThumbnailFromFullImage(
+  fullImageDataUrl: string, 
+  targetWidth: number = 150, 
+  targetHeight: number = 50
+): Promise<string> {
+  console.log('Generating thumbnail from full image:', { targetWidth, targetHeight });
+  
+  return new Promise((resolve, reject) => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        // Draw the full image scaled down to thumbnail size
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+        try {
+          const thumbnailDataUrl = canvas.toDataURL('image/png', 0.8);
+          console.log('Thumbnail generated from full image successfully');
+          resolve(thumbnailDataUrl);
+        } catch (error) {
+          console.error('Error converting thumbnail to data URL:', error);
+          reject(error);
+        }
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load full image for thumbnail generation'));
+      };
+
+      img.src = fullImageDataUrl;
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+/**
+ * Generates a thumbnail from the badge design (legacy method)
  * @param badge The badge design data
  * @returns Promise<string> Base64 encoded image data URL
  */
@@ -154,12 +237,12 @@ export async function generateCartThumbnail(badge: Badge): Promise<string> {
   });
   
   try {
-    // Create a much smaller thumbnail for cart display
+    // Create a properly sized thumbnail for cart display
     const thumbnail = await generateBadgeThumbnail(badge, {
-      width: 80,  // Reduced from 150
-      height: 30, // Reduced from 50
-      quality: 0.6, // Reduced quality for smaller file size
-      format: 'image/jpeg' // Use JPEG instead of PNG for better compression
+      width: 150,  // Back to original size for better visibility
+      height: 50,  // Back to original size
+      quality: 0.8, // Good quality
+      format: 'image/png' // Use PNG for better text clarity
     });
     console.log('Cart thumbnail generated successfully');
     return thumbnail;
@@ -169,6 +252,57 @@ export async function generateCartThumbnail(badge: Badge): Promise<string> {
     const fallback = generateFallbackThumbnail(badge);
     console.log('Using fallback cart thumbnail');
     return fallback;
+  }
+}
+
+/**
+ * Generates a fallback full-size image when the main generation fails
+ * @param badge The badge design data
+ * @returns string Base64 encoded fallback image
+ */
+function generateFallbackFullImage(badge: Badge): string {
+  console.log('Generating fallback full badge image for badge:', {
+    backgroundColor: badge.backgroundColor
+  });
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) {
+    console.error('Could not get canvas context for fallback full image');
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  }
+
+  canvas.width = 300;  // 1 inch at 300 DPI
+  canvas.height = 900; // 3 inches at 300 DPI
+
+  try {
+    // Simple fallback design with proper background color
+    const backgroundColor = badge.backgroundColor || '#FFFFFF';
+    console.log('Fallback full image background color:', backgroundColor);
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, 300, 900);
+    
+    // Add border
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, 0, 300, 900);
+
+    // Add text with contrasting color
+    const textColor = backgroundColor === '#FFFFFF' || backgroundColor === '#F0E68C' ? '#000000' : '#FFFFFF';
+    ctx.fillStyle = textColor;
+    ctx.font = '48px Arial'; // Larger font for full image
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Custom Badge', 150, 450); // Center of the image
+
+    const dataUrl = canvas.toDataURL('image/png', 0.9);
+    console.log('Fallback full image generated successfully');
+    return dataUrl;
+  } catch (error) {
+    console.error('Error generating fallback full image:', error);
+    // Return a minimal 1x1 transparent pixel as last resort
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
   }
 }
 
@@ -190,8 +324,8 @@ function generateFallbackThumbnail(badge: Badge): string {
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
   }
 
-  canvas.width = 80;  // Reduced from 150
-  canvas.height = 30; // Reduced from 50
+  canvas.width = 150;  // Back to original size
+  canvas.height = 50;  // Back to original size
 
   try {
     // Simple fallback design with proper background color
@@ -203,17 +337,17 @@ function generateFallbackThumbnail(badge: Badge): string {
     // Add border
     ctx.strokeStyle = '#888';
     ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, 80, 30);
+    ctx.strokeRect(0, 0, 150, 50);
 
     // Add text with contrasting color
     const textColor = backgroundColor === '#FFFFFF' || backgroundColor === '#F0E68C' ? '#000000' : '#FFFFFF';
     ctx.fillStyle = textColor;
-    ctx.font = '8px Arial'; // Smaller font
+    ctx.font = '12px Arial'; // Back to readable font size
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Custom Badge', 40, 15); // Adjusted position
+    ctx.fillText('Custom Badge', 75, 25); // Back to original position
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Use JPEG with lower quality
+    const dataUrl = canvas.toDataURL('image/png', 0.8); // Use PNG with good quality
     console.log('Fallback thumbnail generated successfully');
     return dataUrl;
   } catch (error) {

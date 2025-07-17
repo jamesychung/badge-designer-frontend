@@ -20,7 +20,7 @@ import { BadgeEditPanel } from './BadgeEditPanel';
 import { BadgeLine, Badge } from '../types/badge';
 import { BACKGROUND_COLORS, FONT_COLORS } from '../constants/colors';
 import { BADGE_CONSTANTS } from '../constants/badge';
-import { generateCartThumbnail } from '../utils/badgeThumbnail';
+import { generateFullBadgeImage, generateThumbnailFromFullImage } from '../utils/badgeThumbnail';
 import { getCurrentShop, saveBadgeDesign, ShopAuthData } from '../utils/shopAuth';
 import { createApi } from '../utils/api';
 
@@ -265,22 +265,61 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         }
       };
 
-      // Generate thumbnail image of the badge design
+      // Generate full-size badge image and thumbnail
+      let fullImage = '';
+      let fullImageUrl = '';
       let thumbnailImage = '';
+      let thumbnailUrl = '';
+      
       try {
-        thumbnailImage = await generateCartThumbnail(badge);
-        console.log('Thumbnail generated successfully:', thumbnailImage.substring(0, 50) + '...');
+        // Generate full-size badge image first
+        fullImage = await generateFullBadgeImage(badge);
+        console.log('Full badge image generated successfully:', fullImage.substring(0, 50) + '...');
         
-        // Update the badge design record with the thumbnail URL
+        // Upload full image to Gadget
+        const timestamp = Date.now();
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const fullImageFilename = `badge-full-${savedDesign.designId}-${timestamp}-${randomId}.png`;
+        
+        const fullImageUploadResult = await api.uploadImage(fullImage, fullImageFilename, {
+          designId: savedDesign.designId,
+          type: 'badge-full-image',
+          createdAt: new Date().toISOString()
+        });
+        
+        fullImageUrl = fullImageUploadResult.uploadUrl;
+        console.log('Full badge image uploaded to Gadget:', fullImageUrl);
+        
+        // Generate thumbnail from the full image
+        thumbnailImage = await generateThumbnailFromFullImage(fullImage, 150, 50);
+        console.log('Thumbnail generated from full image successfully');
+        
+        // Upload thumbnail to Gadget
+        const thumbnailFilename = `badge-thumbnail-${savedDesign.designId}-${timestamp}-${randomId}.png`;
+        
+        const thumbnailUploadResult = await api.uploadImage(thumbnailImage, thumbnailFilename, {
+          designId: savedDesign.designId,
+          type: 'badge-thumbnail',
+          createdAt: new Date().toISOString()
+        });
+        
+        thumbnailUrl = thumbnailUploadResult.uploadUrl;
+        console.log('Thumbnail uploaded to Gadget:', thumbnailUrl);
+        
+        // Update the badge design record with both URLs
         if (savedDesign.id) {
           await api.updateBadgeDesign(savedDesign.id, {
-            thumbnailUrl: thumbnailImage
+            fullImageUrl: fullImageUrl,
+            thumbnailUrl: thumbnailUrl
           });
-          console.log('Badge design updated with thumbnail URL');
+          console.log('Badge design updated with both full image and thumbnail URLs');
         }
       } catch (error) {
-        console.error('Failed to generate thumbnail:', error);
+        console.error('Failed to generate or upload images:', error);
+        fullImage = ''; // Fallback to empty string
+        fullImageUrl = ''; // Fallback to empty string
         thumbnailImage = ''; // Fallback to empty string
+        thumbnailUrl = ''; // Fallback to empty string
       }
       
       const badgeData = {
@@ -297,8 +336,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
           'Backing Type': badge.backing,
           'Design ID': savedDesign.designId,
           'Gadget Design ID': savedDesign.id,
-          'Custom Thumbnail': thumbnailImage, // This will be the data URL
-          '_custom_thumbnail': thumbnailImage, // Alternative property name for theme compatibility
+          'Custom Thumbnail': thumbnailUrl || thumbnailImage, // Use hosted URL if available, fallback to data URL
+          '_custom_thumbnail': thumbnailUrl || thumbnailImage, // Alternative property name for theme compatibility
           'Price': `$${totalPrice}`,
           'Full Design Data': JSON.stringify(badge)
         }

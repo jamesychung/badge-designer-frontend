@@ -249,6 +249,39 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
       }
   },
 
+  // Upload image to Gadget
+  async uploadImage(imageData: string, filename: string, metadata?: any) {
+    try {
+      console.log('Uploading image to Gadget:', { filename, hasMetadata: !!metadata });
+      
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageData,
+          filename,
+          contentType: 'image/png',
+          metadata
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Image upload result:', result);
+      
+      return result;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  },
+
   // Close modal
   closeModal() {
     this.sendToParent({
