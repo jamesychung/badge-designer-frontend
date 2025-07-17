@@ -1,11 +1,8 @@
-import type { ActionFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Client } from '@gadget-client/allqualitybadges';
 
-export const action: ActionFunction = async ({ request }) => {
-  if (request.method !== "GET") {
-    return json({ error: "Method not allowed" }, { status: 405 });
-  }
+export const loader: LoaderFunction = async ({ request }) => {
 
   try {
     // Get environment variables
