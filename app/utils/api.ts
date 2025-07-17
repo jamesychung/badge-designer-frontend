@@ -52,8 +52,6 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
     // Save badge design using server-side API route
     async saveBadgeDesign(designData: any, shopData?: any): Promise<BadgeDesignData> {
       try {
-        console.log('saveBadgeDesign called with:', { designData, shopData });
-        
         // Use server-side API route instead of client-side Gadget client
         const response = await fetch('/api/save-badge', {
         method: 'POST',
@@ -69,8 +67,6 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         }
 
         const result = await response.json();
-        
-        console.log('Save badge API response:', result);
         
         return { 
           id: result.id ?? undefined, 
@@ -187,7 +183,6 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
         });
 
         const cartUrl = `https://${shopifyStoreUrl}/cart/add?${params.toString()}`;
-        console.log('Redirecting to cart URL:', cartUrl);
         
         // Redirect to the cart addition URL
         window.location.href = cartUrl;
@@ -221,8 +216,6 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
   // Upload image to Gadget
   async uploadImage(imageData: string, filename: string, metadata?: any) {
     try {
-      console.log('Uploading image to Gadget:', { filename, hasMetadata: !!metadata });
-      
       const response = await fetch('/api/upload-image', {
         method: 'POST',
         headers: {
@@ -242,7 +235,6 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
       }
 
       const result = await response.json();
-      console.log('Image upload result:', result);
       
       return result;
     } catch (error) {
@@ -257,5 +249,5 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
       action: 'close-modal'
     });
   }
-}; 
-} 
+};
+}

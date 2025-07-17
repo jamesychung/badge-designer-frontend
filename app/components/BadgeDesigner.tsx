@@ -54,8 +54,6 @@ const badgeHeight = BADGE_CONSTANTS.BADGE_HEIGHT;
 const MIN_FONT_SIZE = BADGE_CONSTANTS.MIN_FONT_SIZE;
 
 const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, shop: _shop, gadgetApiUrl, gadgetApiKey }) => {
-  console.log('BadgeDesigner component - shop prop:', _shop, 'productId prop:', _productId, 'type:', typeof _productId);
-  
   // Create API instance with environment variables
   const api = createApi(gadgetApiUrl, gadgetApiKey);
 
@@ -251,15 +249,13 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       }, shopData);
 
       // Log the save result
-      console.log('Badge design save result:', savedDesign);
+      console.log('Badge design saved:', savedDesign.id);
       if (savedDesign.fallback) {
         console.warn('Badge design saved in fallback mode:', savedDesign.message);
       }
 
       // Get the correct variant ID based on backing type
       const getVariantId = (backingType: string, productId?: string | null) => {
-        console.log('Getting variant ID for backing type:', backingType, 'product ID:', productId);
-        
         // Always use the correct numeric Shopify variant IDs
         // These are the actual variant IDs from your Shopify admin
         switch (backingType) {
@@ -281,19 +277,19 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       try {
         // Generate full-size badge image first
         fullImage = await generateFullBadgeImage(badge);
-        console.log('Full badge image generated successfully:', fullImage.substring(0, 50) + '...');
+        console.log('Full badge image generated');
         
         // Generate thumbnail from the full image
         thumbnailImage = await generateThumbnailFromFullImage(fullImage, 200, 100);
-        console.log('Thumbnail generated from full image successfully');
+        console.log('Thumbnail generated');
         
         // Update the badge design record with both image data URLs
         if (savedDesign.id) {
-          await api.updateBadgeDesign(savedDesign.id, {
+          const updateResult = await api.updateBadgeDesign(savedDesign.id, {
             fullImageUrl: fullImage,
             thumbnailUrl: thumbnailImage
           });
-          console.log('Badge design updated with both full image and thumbnail data URLs');
+          console.log('Badge design updated with images:', updateResult.id ? 'success' : 'failed');
         }
       } catch (error) {
         console.error('Failed to generate images:', error);
@@ -327,23 +323,14 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       console.log('Thumbnail image length:', thumbnailImage.length);
       console.log('Thumbnail image preview:', thumbnailImage.substring(0, 100) + '...');
       
-      // Detailed logging of properties
-      console.log('=== DETAILED PROPERTIES LOG ===');
-      console.log('Properties object:', JSON.stringify(badgeData.properties, null, 2));
-      console.log('Custom Badge Design:', badgeData.properties['Custom Badge Design']);
-      console.log('Badge Text Line 1:', badgeData.properties['Badge Text Line 1']);
-      console.log('Badge Text Line 2:', badgeData.properties['Badge Text Line 2']);
-      console.log('Badge Text Line 3:', badgeData.properties['Badge Text Line 3']);
-      console.log('Badge Text Line 4:', badgeData.properties['Badge Text Line 4']);
-      console.log('Background Color:', badgeData.properties['Background Color']);
-      console.log('Backing Type:', badgeData.properties['Backing Type']);
-      console.log('Design ID:', badgeData.properties['Design ID']);
-      console.log('Custom Thumbnail exists:', !!badgeData.properties['Custom Thumbnail']);
-      console.log('=== END PROPERTIES LOG ===');
+      console.log('Adding badge to cart:', {
+        variantId: badgeData.variantId,
+        designId: savedDesign.designId,
+        hasThumbnail: !!thumbnailImage
+      });
       
-      console.log('About to call api.addToCart with:', badgeData);
       const result = await api.addToCart(badgeData);
-      console.log('api.addToCart result:', result);
+      console.log('Cart addition result:', result.success ? 'success' : 'failed');
       
       // Handle successful cart addition
       if (result.success) {

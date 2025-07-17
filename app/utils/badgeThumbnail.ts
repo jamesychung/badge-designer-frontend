@@ -26,13 +26,6 @@ export async function generateBadgeThumbnail(
 
   return new Promise((resolve, reject) => {
     try {
-      console.log('Generating thumbnail for badge:', {
-        backgroundColor: badge.backgroundColor,
-        lines: badge.lines.length,
-        width,
-        height
-      });
-
       // Create canvas element
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -49,7 +42,6 @@ export async function generateBadgeThumbnail(
 
       // Fill background with fallback
       const backgroundColor = badge.backgroundColor || '#FFFFFF';
-      console.log('Setting background color:', backgroundColor);
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, width, height);
 
@@ -112,14 +104,12 @@ export async function generateBadgeThumbnail(
       // Convert to data URL
       try {
         const dataUrl = canvas.toDataURL(format, quality);
-        console.log('Thumbnail generated successfully, data URL length:', dataUrl.length);
         resolve(dataUrl);
       } catch (toDataUrlError) {
         console.error('Error converting canvas to data URL:', toDataUrlError);
         // Try with lower quality
         try {
           const fallbackDataUrl = canvas.toDataURL('image/png', 0.5);
-          console.log('Fallback thumbnail generated with lower quality');
           resolve(fallbackDataUrl);
         } catch (fallbackError) {
           console.error('Fallback thumbnail generation failed:', fallbackError);
@@ -132,7 +122,6 @@ export async function generateBadgeThumbnail(
       // Return a basic fallback thumbnail instead of rejecting
       try {
         const fallbackThumbnail = generateFallbackThumbnail(badge);
-        console.log('Using fallback thumbnail due to error');
         resolve(fallbackThumbnail);
       } catch (fallbackError) {
         console.error('Fallback thumbnail also failed:', fallbackError);
@@ -148,11 +137,6 @@ export async function generateBadgeThumbnail(
  * @returns Promise<string> Base64 encoded image data URL
  */
 export async function generateFullBadgeImage(badge: Badge): Promise<string> {
-  console.log('Generating full badge image for badge:', {
-    backgroundColor: badge.backgroundColor,
-    lines: badge.lines.length
-  });
-  
   try {
     // Generate full-size image (1" x 3" at 300 DPI = 300x900 pixels)
     const fullImage = await generateBadgeThumbnail(badge, {
@@ -161,13 +145,11 @@ export async function generateFullBadgeImage(badge: Badge): Promise<string> {
       quality: 0.9, // High quality for full image
       format: 'image/png' // PNG for best quality
     });
-    console.log('Full badge image generated successfully');
     return fullImage;
   } catch (error) {
     console.error('Error generating full badge image:', error);
     // Return a fallback image
     const fallback = generateFallbackFullImage(badge);
-    console.log('Using fallback full badge image');
     return fallback;
   }
 }
@@ -184,8 +166,6 @@ export async function generateThumbnailFromFullImage(
   targetWidth: number = 200, 
   targetHeight: number = 100
 ): Promise<string> {
-  console.log('Generating thumbnail from full image:', { targetWidth, targetHeight });
-  
   return new Promise((resolve, reject) => {
     try {
       const img = new Image();
@@ -206,7 +186,6 @@ export async function generateThumbnailFromFullImage(
 
         try {
           const thumbnailDataUrl = canvas.toDataURL('image/png', 0.8);
-          console.log('Thumbnail generated from full image successfully');
           resolve(thumbnailDataUrl);
         } catch (error) {
           console.error('Error converting thumbnail to data URL:', error);

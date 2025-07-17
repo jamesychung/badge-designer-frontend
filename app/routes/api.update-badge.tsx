@@ -67,8 +67,8 @@ export async function action({ request }: ActionFunctionArgs) {
       console.log('Updating badge design with data:', updateData);
       
       const result = await gadgetClient.mutate(`
-        mutation UpdateBadgeDesign($id: GadgetID!, $updateData: UpdateBadgeDesignInput!) {
-          updateBadgeDesign(id: $id, badgeDesign: $updateData) {
+        mutation UpdateBadgeDesign($id: GadgetID!, $fullImageUrl: String, $thumbnailUrl: String) {
+          updateBadgeDesign(id: $id, badgeDesign: { fullImageUrl: $fullImageUrl, thumbnailUrl: $thumbnailUrl }) {
             success
             errors {
               message
@@ -80,21 +80,36 @@ export async function action({ request }: ActionFunctionArgs) {
             }
           }
         }
-      `, { id, updateData });
+      `, { 
+        id, 
+        fullImageUrl: updateData.fullImageUrl,
+        thumbnailUrl: updateData.thumbnailUrl
+      });
       
       console.log('Badge design update result:', result);
       
-      return json({ 
-        success: true, 
-        message: 'Badge design updated successfully',
-        id: result.id,
-        designData: updateData
-      });
+      if (result.updateBadgeDesign?.success) {
+        return json({ 
+          success: true, 
+          message: 'Badge design updated successfully',
+          id: result.updateBadgeDesign.badgeDesign?.id || id,
+          designData: updateData
+        });
+      } else {
+        console.error('Badge design update failed:', result.updateBadgeDesign?.errors);
+        return json({ 
+          success: false, 
+          message: 'Update failed',
+          id: id,
+          designData: updateData,
+          errors: result.updateBadgeDesign?.errors
+        });
+      }
     } catch (apiError) {
       console.error('Error updating badge design in Gadget:', apiError);
       return json({ 
-        success: true, 
-        message: 'Update skipped (Gadget API call failed)',
+        success: false, 
+        message: 'Update failed (Gadget API call failed)',
         id: id,
         designData: updateData,
         error: apiError instanceof Error ? apiError.message : 'Unknown API error'
