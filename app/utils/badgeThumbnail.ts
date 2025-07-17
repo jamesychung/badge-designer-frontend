@@ -181,8 +181,8 @@ export async function generateFullBadgeImage(badge: Badge): Promise<string> {
  */
 export async function generateThumbnailFromFullImage(
   fullImageDataUrl: string, 
-  targetWidth: number = 150, 
-  targetHeight: number = 50
+  targetWidth: number = 200, 
+  targetHeight: number = 100
 ): Promise<string> {
   console.log('Generating thumbnail from full image:', { targetWidth, targetHeight });
   
@@ -239,8 +239,8 @@ export async function generateCartThumbnail(badge: Badge): Promise<string> {
   try {
     // Create a properly sized thumbnail for cart display
     const thumbnail = await generateBadgeThumbnail(badge, {
-      width: 150,  // Back to original size for better visibility
-      height: 50,  // Back to original size
+      width: 200,  // Better width for visibility
+      height: 100, // Better height for readability
       quality: 0.8, // Good quality
       format: 'image/png' // Use PNG for better text clarity
     });

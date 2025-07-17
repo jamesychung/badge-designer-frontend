@@ -275,7 +275,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         console.log('Full badge image generated successfully:', fullImage.substring(0, 50) + '...');
         
         // Generate thumbnail from the full image
-        thumbnailImage = await generateThumbnailFromFullImage(fullImage, 150, 50);
+        thumbnailImage = await generateThumbnailFromFullImage(fullImage, 200, 100);
         console.log('Thumbnail generated from full image successfully');
         
         // Update the badge design record with both image data URLs
