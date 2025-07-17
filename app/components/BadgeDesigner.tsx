@@ -276,20 +276,23 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       
       const badgeData = {
         variantId: getVariantId(badge.backing),
-        productId: _productId, // Keep product ID for reference
-        shopId: shopData?.shopId, // Add shop ID for multi-tenant support
-        line1: badge.lines[0]?.text || '',
-        line2: badge.lines[1]?.text || '',
-        line3: badge.lines[2]?.text || '',
-        line4: badge.lines[3]?.text || '',
-        backgroundColor: badge.backgroundColor,
-        fontFamily: badge.lines[0]?.fontFamily || 'Arial',
-        backing: badge.backing,
-        designId: savedDesign.designId, // Use the saved design ID from Gadget
-        gadgetDesignId: savedDesign.id, // Add the Gadget record ID
-        fullDesignData: badge,
-        price: totalPrice,
-        thumbnailImage: thumbnailImage // Add the generated thumbnail
+        quantity: 1,
+        properties: {
+          'Custom Badge Design': 'Yes',
+          'Badge Text Line 1': badge.lines[0]?.text || '',
+          'Badge Text Line 2': badge.lines[1]?.text || '',
+          'Badge Text Line 3': badge.lines[2]?.text || '',
+          'Badge Text Line 4': badge.lines[3]?.text || '',
+          'Background Color': badge.backgroundColor,
+          'Font Family': badge.lines[0]?.fontFamily || 'Arial',
+          'Backing Type': badge.backing,
+          'Design ID': savedDesign.designId,
+          'Gadget Design ID': savedDesign.id,
+          'Custom Thumbnail': thumbnailImage, // This will be the data URL
+          '_custom_thumbnail': thumbnailImage, // Alternative property name for theme compatibility
+          'Price': `$${totalPrice}`,
+          'Full Design Data': JSON.stringify(badge)
+        }
       };
       
       await api.addToCart(badgeData);
