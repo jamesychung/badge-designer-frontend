@@ -45,36 +45,28 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
     GADGET_API_KEY: GADGET_API_KEY ? 'SET' : 'NOT SET'
   });
 
-  // Create Gadget client instance
-  const gadgetClient = new Client({
-    environment: environment,
-    authenticationMode: { apiKey: GADGET_API_KEY || undefined },
-  });
-
-  // API functions using Gadget client
+  // API functions using server-side route for saving
   return {
-    // Save badge design using Gadget client
+    // Save badge design using server-side API route
     async saveBadgeDesign(designData: any, shopData?: any): Promise<BadgeDesignData> {
       try {
         console.log('saveBadgeDesign called with:', { designData, shopData });
         
-        // Prepare the payload for Gadget
-        const gadgetPayload = {
-          ...(shopData?.shopId ? { shopId: shopData.shopId } : {}),
-          productId: designData.productId,
-          designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          status: "saved" as const,
-          designData: designData.badge || designData,
-          backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
-          backingType: designData.badge?.backing || "pin",
-          basePrice: 9.99,
-          backingPrice: 0,
-          totalPrice: 9.99,
-          textLines: designData.badge?.lines || [],
-        };
-        
-        // Create the badge design using the Gadget client
-        const result = await gadgetClient.badgeDesign.create(gadgetPayload);
+        // Use server-side API route instead of client-side Gadget client
+        const response = await fetch('/api/save-badge', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ designData, shopData }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
         
         return { 
           id: result.id ?? undefined, 
@@ -94,9 +86,8 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
     // Get badge design by ID (with fallback)
     async getBadgeDesign(id: string): Promise<BadgeDesignData> {
       try {
-        // Try to get from Gadget API
-        const result = await gadgetClient.badgeDesign.findOne(id);
-        return { id, designData: result.designData };
+        // For now, just return a fallback since we don't have a get endpoint yet
+        throw new Error('Design not found');
       } catch (error) {
         // Fallback
         throw new Error('Design not found');
