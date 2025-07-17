@@ -42,18 +42,19 @@ export const action: ActionFunction = async ({ request }) => {
     });
 
     // Prepare the payload for Gadget
+    const badgeDesignData = designData.badge || designData;
+    
     const gadgetPayload = {
-      shopId: shopData?.shopId ||75389960447, // Use the real shopId from badgesonly.myshopify.com
+      shopId: shopData?.shopId || "75389960447",
       productId: designData.productId,
       designId: `design_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      status: "saved" as const,
-      designData: JSON.stringify(designData.badge || designData), // Convert to JSON string
-      backgroundColor: designData.badge?.backgroundColor || "#FFFFFF",
-      backingType: designData.badge?.backing || "pin",
-      basePrice: 9.99,
-      backingPrice: 0,
+      status: "saved",
+      designData: JSON.stringify(badgeDesignData),
+      backgroundColor: badgeDesignData.backgroundColor || "#FFFFFF",
+      backingType: badgeDesignData.backing || "pin",
+      basePrice: 90.99      backingPrice: 0,
       totalPrice: 9.99,
-      textLines: JSON.stringify(designData.badge?.lines || []), // Convert to JSON string
+      textLines: JSON.stringify(badgeDesignData.lines || []),
     };
 
     console.log('Attempting to create badge design with payload:', gadgetPayload);
