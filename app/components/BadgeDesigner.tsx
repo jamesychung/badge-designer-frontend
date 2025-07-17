@@ -315,7 +315,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
       const result = await api.addToCart(badgeData);
       console.log('api.addToCart result:', result);
       
-      // Redirect to Shopify cart after successful addition
+      // Handle successful cart addition
       if (result.success) {
         // Get Shopify store URL from environment or use default
         // In frontend, we'll use a default or get from window object if available
@@ -323,7 +323,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         
         // Add a small delay to allow console logs to be captured
         setTimeout(() => {
-          alert(`Badge added to cart! Price: $${totalPrice}`);
+          alert(`Badge added to cart! Price: $${totalPrice}\n\nRedirecting to your cart...`);
           // Redirect to Shopify cart
           window.location.href = `https://${shopifyStoreUrl}/cart`;
         }, 100);
