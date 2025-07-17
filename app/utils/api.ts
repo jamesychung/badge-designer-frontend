@@ -113,42 +113,71 @@ export function createApi(gadgetApiUrl?: string, gadgetApiKey?: string) {
     }
   },
 
-  // Add to cart functionality
+  // Add to cart functionality - direct Shopify cart API call
   async addToCart(badgeData: any) {
       console.log('addToCart function called with:', badgeData);
+      
       try {
-        console.log('Making fetch request to /api/add-to-cart');
-        // First, try to add via server-side API
-        const response = await fetch('/api/add-to-cart', {
+        // Get Shopify store URL from environment or use default
+        // In frontend, we'll use a default or get from window object if available
+        const shopifyStoreUrl = (typeof window !== 'undefined' && (window as any).SHOPIFY_STORE_URL) || 'badgesonly.myshopify.com';
+        
+        console.log('Adding to Shopify cart directly from frontend');
+        console.log('Shopify store URL:', shopifyStoreUrl);
+        console.log('Cart data:', badgeData);
+
+        // Prepare the cart addition data for Shopify
+        const cartData = {
+          items: [{
+            id: badgeData.variantId,
+            quantity: badgeData.quantity,
+            properties: badgeData.properties
+          }]
+        };
+
+        console.log('Cart data to send to Shopify:', cartData);
+
+        // Add to Shopify cart using the Cart API directly from frontend
+        const cartResponse = await fetch(`https://${shopifyStoreUrl}/cart/add.js`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ badgeData }),
+          body: JSON.stringify(cartData),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+        console.log('Shopify cart API response status:', cartResponse.status);
+
+        if (!cartResponse.ok) {
+          const errorText = await cartResponse.text();
+          console.error('Shopify cart API error:', errorText);
+          throw new Error(`Shopify cart API error: ${cartResponse.status}: ${errorText}`);
         }
 
-        const result = await response.json();
-        console.log('Add to cart result:', result);
+        const cartResult = await cartResponse.json();
+        console.log('Shopify cart API response:', cartResult);
 
-        // Send to parent window for Shopify integration
+        // Also send to parent window for additional integration
         this.sendToParent({
           action: 'add-to-cart',
           payload: badgeData
         });
 
-        return result;
+        return { 
+          success: true, 
+          message: 'Badge added to cart successfully',
+          cartData: cartResult,
+          badgeData 
+        };
+
       } catch (error) {
         console.error('Error adding to cart:', error);
         
         // Fallback to just sending to parent window
-    this.sendToParent({
-      action: 'add-to-cart',
-      payload: badgeData
-    });
+        this.sendToParent({
+          action: 'add-to-cart',
+          payload: badgeData
+        });
         
         throw error;
       }
