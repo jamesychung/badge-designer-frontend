@@ -163,8 +163,8 @@ export async function generateFullBadgeImage(badge: Badge): Promise<string> {
  */
 export async function generateThumbnailFromFullImage(
   fullImageDataUrl: string, 
-  targetWidth: number = 200, 
-  targetHeight: number = 100
+  targetWidth: number = 100, 
+  targetHeight: number = 50
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
@@ -210,26 +210,19 @@ export async function generateThumbnailFromFullImage(
  * @returns Promise<string> Base64 encoded image data URL
  */
 export async function generateCartThumbnail(badge: Badge): Promise<string> {
-  console.log('Generating cart thumbnail for badge:', {
-    backgroundColor: badge.backgroundColor,
-    lines: badge.lines.length
-  });
-  
   try {
     // Create a properly sized thumbnail for cart display
     const thumbnail = await generateBadgeThumbnail(badge, {
-      width: 200,  // Better width for visibility
-      height: 100, // Better height for readability
-      quality: 0.8, // Good quality
+      width: 100,  // Smaller width for cart properties
+      height: 50,  // Smaller height for cart properties
+      quality: 0.7, // Lower quality to reduce size
       format: 'image/png' // Use PNG for better text clarity
     });
-    console.log('Cart thumbnail generated successfully');
     return thumbnail;
   } catch (error) {
     console.error('Error generating cart thumbnail:', error);
     // Return a fallback thumbnail
     const fallback = generateFallbackThumbnail(badge);
-    console.log('Using fallback cart thumbnail');
     return fallback;
   }
 }

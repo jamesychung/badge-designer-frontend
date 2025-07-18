@@ -279,8 +279,8 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
         fullImage = await generateFullBadgeImage(badge);
         console.log('Full badge image generated');
         
-        // Generate thumbnail from the full image
-        thumbnailImage = await generateThumbnailFromFullImage(fullImage, 200, 100);
+        // Generate smaller thumbnail for cart (reduce size to fit in properties)
+        thumbnailImage = await generateThumbnailFromFullImage(fullImage, 100, 50);
         console.log('Thumbnail generated');
         
         // Update the badge design record with both image data URLs
@@ -311,10 +311,7 @@ const BadgeDesigner: React.FC<BadgeDesignerProps> = ({ productId: _productId, sh
           'Backing Type': badge.backing,
           'Design ID': savedDesign.designId,
           'Gadget Design ID': savedDesign.id,
-          'Custom Thumbnail': thumbnailImage, // Use the generated thumbnail data URL
-          '_custom_thumbnail': thumbnailImage, // Alternative property name for theme compatibility
-          'Price': `$${totalPrice}`,
-          'Full Design Data': JSON.stringify(badge)
+          'Price': `$${totalPrice}`
         }
       };
       

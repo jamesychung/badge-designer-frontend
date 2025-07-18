@@ -66,43 +66,28 @@ export async function action({ request }: ActionFunctionArgs) {
     try {
       console.log('Updating badge design with data:', updateData);
       
-      const result = await gadgetClient.mutate(`
-        mutation UpdateBadgeDesign($id: GadgetID!, $fullImageUrl: String, $thumbnailUrl: String) {
-          updateBadgeDesign(id: $id, badgeDesign: { fullImageUrl: $fullImageUrl, thumbnailUrl: $thumbnailUrl }) {
-            success
-            errors {
-              message
-            }
-            badgeDesign {
-              id
-              fullImageUrl
-              thumbnailUrl
-            }
-          }
-        }
-      `, { 
-        id, 
+      // Use the internal API to update the record directly
+      const result = await gadgetClient.internal.badgeDesign.update(id, {
         fullImageUrl: updateData.fullImageUrl,
         thumbnailUrl: updateData.thumbnailUrl
       });
       
       console.log('Badge design update result:', result);
       
-      if (result.updateBadgeDesign?.success) {
+      if (result) {
         return json({ 
           success: true, 
           message: 'Badge design updated successfully',
-          id: result.updateBadgeDesign.badgeDesign?.id || id,
+          id: result.id || id,
           designData: updateData
         });
       } else {
-        console.error('Badge design update failed:', result.updateBadgeDesign?.errors);
+        console.error('Badge design update failed: no result returned');
         return json({ 
           success: false, 
-          message: 'Update failed',
+          message: 'Update failed - no result returned',
           id: id,
-          designData: updateData,
-          errors: result.updateBadgeDesign?.errors
+          designData: updateData
         });
       }
     } catch (apiError) {

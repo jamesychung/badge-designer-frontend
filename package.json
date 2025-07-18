@@ -17,6 +17,7 @@
     "@remix-run/node": "2.16.7",
     "@remix-run/react": "2.16.7",
     "@remix-run/serve": "2.16.7",
+    "@supabase/supabase-js": "^2.52.0",
     "@types/papaparse": "^5.3.16",
     "@vercel/remix": "2.16.7",
     "isbot": "^4.1.0",
