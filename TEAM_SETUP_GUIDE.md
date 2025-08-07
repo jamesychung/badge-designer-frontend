@@ -1,31 +1,29 @@
-# Badge Designer - Team Setup Guide
+# Badge Designer - Team Setup Guide (Frontend Only)
 
 ## 🚀 Quick Start
 
-Welcome to the Badge Designer project! This guide will help you set up the complete development environment.
+Welcome to the Badge Designer project! This guide will help you set up the **frontend development environment** for the Vercel-hosted Remix application.
 
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v18 or higher)
-- **Yarn** (v1.22 or higher)
 - **Git**
 - **VS Code** (recommended)
-- **Shopify CLI** (for backend development)
 
 ## 🏗️ Project Architecture
 
-The Badge Designer consists of **3 separate repositories**:
+The Badge Designer consists of **3 separate repositories**, but you'll only be working on the **frontend**:
 
 ```
 📁 Badge Designer Project
 ├── 📁 Main Repository (this repo) - Documentation & Overview
-├── 📁 badge-designer-frontend/ - Remix Frontend (Vercel)
-└── 📁 badge-designer/ - Gadget Backend (Shopify Integration)
+├── 📁 badge-designer-frontend/ - Remix Frontend (Vercel) ← YOU WORK HERE
+└── 📁 badge-designer/ - Gadget Backend (Shopify Integration) ← NOT NEEDED
 ```
 
-## 📥 Step 1: Clone All Repositories
+## 📥 Step 1: Clone Required Repositories
 
 ### 1.1 Main Repository (Documentation)
 ```bash
@@ -40,12 +38,7 @@ git clone <frontend-repo-url> badge-designer-frontend-app
 cd badge-designer-frontend-app
 ```
 
-### 1.3 Backend Repository
-```bash
-# Clone the backend repository (separate repo)
-git clone <backend-repo-url> badge-designer-backend
-cd badge-designer-backend
-```
+**Note**: You only need these two repositories. The backend repository is handled by the team lead.
 
 ## 🔧 Step 2: Frontend Setup (Vercel)
 
@@ -63,12 +56,11 @@ SUPABASE_URL=https://gxzfggczycqqbbfpwaowm.supabase.co
 SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 
-# Gadget Configuration
-GADGET_API_URL=your_gadget_api_url_here
-
 # Development
 NODE_ENV=development
 ```
+
+**Note**: You'll receive the actual API keys from the team lead.
 
 ### 2.3 Start Development Server
 ```bash
@@ -77,85 +69,46 @@ npm run dev
 
 **Frontend will be available at**: `http://localhost:3000`
 
-## 🔧 Step 3: Backend Setup (Gadget)
+## 🔑 Step 3: API Keys & Access
 
-### 3.1 Install Dependencies
-```bash
-cd badge-designer-backend
-yarn install
-```
-
-### 3.2 Shopify CLI Setup
-```bash
-# Install Shopify CLI if not already installed
-npm install -g @shopify/cli @shopify/theme
-
-# Login to Shopify
-shopify auth login
-```
-
-### 3.3 Environment Configuration
-The backend uses Shopify app configuration files:
-- `shopify.app.development.toml` - Development environment
-- `shopify.app.toml` - Production environment
-
-### 3.4 Start Development Server
-```bash
-yarn shopify:dev
-```
-
-## 🔑 Step 4: API Keys & Access
-
-### 4.1 Supabase Access
+### 3.1 Supabase Access
 You'll need access to the Supabase project:
 - **Project URL**: `https://gxzfggczycqqbbfpwaowm.supabase.co`
 - **Database**: PostgreSQL with badge_designs table
 - **Storage**: Badge images and thumbnails
 
-### 4.2 Gadget Access
-You'll need access to the Gadget project:
-- **Project URL**: Provided by team lead
-- **API Keys**: For Shopify integration
+**Contact the team lead for:**
+- Supabase API keys
+- Database access credentials
+- Storage bucket permissions
 
-### 4.3 Shopify App Access
-You'll need access to the Shopify app:
-- **App ID**: Provided by team lead
-- **API Keys**: For development store access
+## 🧪 Step 4: Testing Setup
 
-## 🧪 Step 5: Testing Setup
-
-### 5.1 Frontend Testing
+### 4.1 Frontend Testing
 ```bash
 cd badge-designer-frontend-app
 npm run test
 ```
 
-### 5.2 Backend Testing
-```bash
-cd badge-designer-backend
-yarn test
-```
-
-### 5.3 Integration Testing
-1. Start both frontend and backend servers
-2. Visit the frontend URL
+### 4.2 Manual Testing
+1. Start the development server
+2. Visit `http://localhost:3000`
 3. Test badge design functionality
 4. Verify Supabase data storage
-5. Test Shopify cart integration
+5. Test the design interface
 
-## 📚 Step 6: Documentation Review
+## 📚 Step 5: Documentation Review
 
 Read these key documents in the main repository:
 
 1. **`overview.md`** - Complete project overview
 2. **`CLEANED_ARCHITECTURE.md`** - Current architecture
 3. **`MIGRATION_TO_SUPABASE.md`** - Database migration status
-4. **`SHOPIFY_SETUP_GUIDE.md`** - Shopify integration details
-5. **`SHOPIFY_CART_INTEGRATION_GUIDE.md`** - Cart integration
+4. **`TEAM_SETUP_GUIDE.md`** - This guide
 
-## 🔄 Step 7: Development Workflow
+## 🔄 Step 6: Development Workflow
 
-### 7.1 Frontend Development
+### 6.1 Frontend Development
 ```bash
 cd badge-designer-frontend-app
 npm run dev
@@ -164,18 +117,15 @@ npm run dev
 # Commit and push changes
 ```
 
-### 7.2 Backend Development
-```bash
-cd badge-designer-backend
-yarn shopify:dev
-# Make changes to Gadget models/actions
-# Test Shopify integration
-# Deploy with: yarn shopify:deploy:development
-```
+### 6.2 Key Frontend Files
+- `app/components/BadgeDesigner.tsx` - Main design interface
+- `app/routes/` - Remix routes for the application
+- `app/utils/supabase.ts` - Supabase client configuration
+- `app/types/badge.ts` - TypeScript types for badge designs
 
-### 7.3 Database Changes
+### 6.3 Database Changes
 For Supabase schema changes:
-1. Update schema in Supabase dashboard
+1. Contact team lead for schema updates
 2. Update TypeScript types in frontend
 3. Test data operations
 4. Update documentation
@@ -189,13 +139,6 @@ node --version  # Should be v18+
 npm install     # Reinstall dependencies
 ```
 
-### Issue: Backend Shopify connection fails
-**Solution**: Verify Shopify CLI authentication
-```bash
-shopify auth login
-shopify app info
-```
-
 ### Issue: Supabase connection errors
 **Solution**: Check environment variables
 ```bash
@@ -203,11 +146,16 @@ shopify app info
 cat .env.local
 ```
 
+### Issue: Missing API keys
+**Solution**: Contact team lead for access
+- Email: jamesychung@gmail.com
+- Request: Supabase API keys and access
+
 ### Issue: Iframe integration not working
 **Solution**: Check CORS settings and iframe headers
 - Verify Vercel configuration
-- Check Shopify app settings
 - Test in incognito mode
+- Check browser console for errors
 
 ## 📞 Getting Help
 
@@ -219,32 +167,37 @@ cat .env.local
 ### External Resources
 - **Remix Documentation**: https://remix.run/docs
 - **Supabase Documentation**: https://supabase.com/docs
-- **Gadget Documentation**: https://gadget.dev/docs
-- **Shopify App Development**: https://shopify.dev/apps
+- **React Documentation**: https://react.dev
+- **TypeScript Documentation**: https://www.typescriptlang.org/docs
 
 ## ✅ Setup Checklist
 
-- [ ] All repositories cloned
+- [ ] Main repository cloned
+- [ ] Frontend repository cloned
 - [ ] Frontend dependencies installed
-- [ ] Backend dependencies installed
 - [ ] Environment variables configured
 - [ ] Frontend development server running
-- [ ] Backend development server running
 - [ ] Supabase connection tested
-- [ ] Shopify integration tested
 - [ ] Documentation reviewed
 - [ ] Test badge design created
 
 ## 🎯 Next Steps
 
-1. **Familiarize yourself** with the codebase
+1. **Familiarize yourself** with the Remix codebase
 2. **Review the migration status** in `MIGRATION_TO_SUPABASE.md`
 3. **Set up your development environment** following this guide
 4. **Create a test badge design** to verify everything works
 5. **Join team discussions** about current development priorities
 
+## 🚫 What You DON'T Need to Set Up
+
+- ❌ **Backend repository** - Handled by team lead
+- ❌ **Shopify CLI** - Not needed for frontend work
+- ❌ **Gadget development** - Backend team handles this
+- ❌ **Shopify app configuration** - Backend team manages this
+
 ---
 
-**Welcome to the team! 🎉**
+**Welcome to the frontend team! 🎉**
 
 If you encounter any issues during setup, please reach out to the team lead or create an issue in the repository.
