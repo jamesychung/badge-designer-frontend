@@ -18,44 +18,44 @@ The Badge Designer consists of **3 separate repositories**, but you'll only be w
 
 ```
 📁 Badge Designer Project
-├── 📁 Main Repository (this repo) - Documentation & Overview
+├── 📁 Main Repository (this repo) - Documentation & Frontend Code
 ├── 📁 badge-designer-frontend/ - Remix Frontend (Vercel) ← YOU WORK HERE
 └── 📁 badge-designer/ - Backend (Handled by team lead) ← NOT NEEDED
 ```
 
-## 📥 Step 1: Clone Required Repositories
+## 📥 Step 1: Clone the Repository
 
-### 1.1 Main Repository (Documentation)
+### 1.1 Clone the Complete Repository
 ```bash
 git clone https://github.com/jamesychung/badge-designer-frontend.git
 cd badge-designer-frontend
 ```
 
-### 1.2 Frontend Repository
-```bash
-# Clone the frontend repository (separate repo)
-git clone <frontend-repo-url> badge-designer-frontend-app
-cd badge-designer-frontend-app
-```
-
-**Note**: You only need these two repositories. The backend repository is handled by the team lead.
+**This repository contains:**
+- ✅ **Documentation** - All project guides and overview
+- ✅ **Frontend Code** - Complete Remix application in `badge-designer-frontend/`
+- ✅ **Setup Guides** - This guide and other documentation
 
 ## 🔧 Step 2: Frontend Setup (Local Development)
 
-### 2.1 Install Dependencies
+### 2.1 Navigate to Frontend Directory
 ```bash
-cd badge-designer-frontend-app
+cd badge-designer-frontend
+```
+
+### 2.2 Install Dependencies
+```bash
 npm install
 ```
 
-### 2.2 Environment Variables
+### 2.3 Environment Variables
 Create `.env.local` file:
 ```env
 # Development
 NODE_ENV=development
 ```
 
-### 2.3 Start Development Server
+### 2.4 Start Development Server
 ```bash
 npm run dev
 ```
@@ -66,7 +66,6 @@ npm run dev
 
 ### 3.1 Frontend Testing
 ```bash
-cd badge-designer-frontend-app
 npm run test
 ```
 
@@ -90,7 +89,7 @@ Read these key documents in the main repository:
 
 ### 5.1 Local Development
 ```bash
-cd badge-designer-frontend-app
+cd badge-designer-frontend
 npm run dev
 # Make changes to Remix app
 # Test in browser
@@ -158,8 +157,7 @@ git remote -v
 
 ## ✅ Setup Checklist
 
-- [ ] Main repository cloned
-- [ ] Frontend repository cloned
+- [ ] Repository cloned
 - [ ] Frontend dependencies installed
 - [ ] Environment variables configured
 - [ ] Frontend development server running

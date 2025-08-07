@@ -42,5 +42,4 @@ Thumbs.db
 *.temp
 
 # Embedded repositories
-badge-designer/
-badge-designer-frontend/ 
+badge-designer/ 
